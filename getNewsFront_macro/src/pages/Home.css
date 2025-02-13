@@ -1,0 +1,126 @@
+/* Home.css */
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 50px 20px;
+}
+
+.header,
+footer {
+	text-align: center;
+	margin-bottom: 50px;
+}
+
+.header h1 {
+	font-size: 1.8rem;
+}
+
+.app-logo {
+	width: 200px;
+	height: auto;
+	margin-bottom: 20px;
+}
+
+.intro-section {
+	text-align: center;
+	margin-bottom: 50px;
+}
+
+.intro-section p {
+	font-size: 18px;
+	line-height: 1.6;
+}
+
+.features-section,
+.technical-section {
+	margin-bottom: 50px;
+}
+
+.features-section h2,
+.technical-section h2 {
+	color: #333;
+	font-size: 24px;
+	margin-bottom: 30px;
+	text-align: center;
+}
+
+.features-list,
+.tools-list {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.feature-item,
+.tool-item {
+	flex: 0 0 calc(33.33% - 20px);
+	margin: 0 10px 20px;
+	padding: 20px;
+	background-color: #f9f9f9;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	transition: transform 0.3s ease-in-out;
+}
+
+.feature-item:hover,
+.tool-item:hover {
+	transform: translateY(-5px);
+}
+
+.feature-item h3,
+.tool-item h3 {
+	color: #333;
+	font-size: 20px;
+	margin-bottom: 10px;
+}
+
+.feature-item p,
+.tool-item p {
+	color: #666;
+	font-size: 16px;
+	line-height: 1.6;
+}
+
+.cta-section {
+	text-align: center;
+	margin-top: 50px;
+}
+
+.cta-link {
+	display: inline-block;
+	padding: 15px 30px;
+	background-color: #007bff;
+	color: #fff;
+	text-decoration: none;
+	border-radius: 5px;
+	font-size: 18px;
+	transition: background-color 0.3s ease-in-out;
+}
+
+.cta-link:hover {
+	background-color: #0056b3;
+}
+
+.gallery {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin-top: 50px;
+}
+
+.gallery-item {
+	flex: 0 0 calc(25% - 20px);
+	margin: 10px;
+}
+
+.gallery-item img {
+	width: 100%;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cta-section {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+}

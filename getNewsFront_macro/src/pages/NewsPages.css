@@ -1,0 +1,134 @@
+.general-bloc {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 50px 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.general-bloc button {
+	margin-bottom: 20px;
+	padding: 10px 20px;
+	background-color: #007bff;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	font-size: 18px;
+	cursor: pointer;
+	transition: background-color 0.3s ease-in-out;
+}
+
+.general-bloc button:hover {
+	background-color: #0056b3;
+	transform: scale(1.05);
+}
+
+.NewsRedditContainer {
+	margin-top: 20px;
+}
+
+/* .NewsRSSContainer {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	align-items: center;
+} */
+
+.NewsItem {
+	margin-bottom: 20px;
+	border-radius: 5px;
+	border: 1px solid #0056b3;
+	padding: 10px;
+	/* max-width:calc(100%/3); */
+}
+
+.NewsItem p {
+	margin: 10px 0px;
+}
+
+.NewsItem .newsListUrl {
+	color: #007bff;
+}
+
+.NewsItem label {
+	margin-right: 10px;
+}
+
+.NewsItem select {
+	padding: 5px;
+	border-radius: 5px;
+	font-size: 16px;
+}
+
+form .ValidateButton {
+	display: block;
+	margin-top: 20px;
+	padding: 10px 20px;
+	background-color: #28a745;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	font-size: 18px;
+	cursor: pointer;
+	transition: background-color 0.3s ease-in-out;
+}
+
+form .ValidateButton:hover {
+	background-color: #218838;
+}
+
+.WaitingMsg {
+	font-size: 18px;
+	color: #934eb1;
+	text-align: center;
+	margin: 10px 0px;
+	border-radius: 5px; /* Coins arrondis pour un look moderne */
+	margin-top: 20px 0px;
+	animation: pulse 1.5s infinite; /* Animation pulsante pour attirer l'attention */
+}
+
+/* Définition de l'animation pulsante */
+@keyframes pulse {
+	0% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	50% {
+		transform: scale(1.25);
+		opacity: 0.8;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+#title_input {
+	width: 90%;
+}
+
+.message {
+	background-color: #d4edda;
+	color: #155724;
+	padding: 10px;
+	border-radius: 5px;
+	margin: 20px 0px;
+	text-align: center;
+}
+
+
+.view_bloc{
+	display: flex;
+	gap:10px;
+	margin: 10px 0px;
+}
+
+.general-bloc .view_tag {
+	background-color: #6a806f;
+}
+
+.general-bloc .view_tag:hover {
+	background-color: #506555;
+}
+

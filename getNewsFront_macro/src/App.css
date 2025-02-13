@@ -1,0 +1,32 @@
+#root {
+	font-family: "Roboto", sans-serif;
+}
+
+html {
+	font-size: 62.5%; /* Ré-équilibrage du `rem` face au `px` pour des calculs simples */
+}
+/* Exemple d'application */
+html p {
+	font-size: 18px; /* Pour les navigateurs qui ne supportent pas le rem */
+	font-size: 1.2rem; /* Pour les navigateurs « Responsive » */
+}
+
+html h1 {
+	font-size: 2rem;
+	margin: 20px 0px;
+}
+
+html h2 {
+	font-size: 1.5rem;
+	margin: 20px 0px;
+}
+
+html h3 {
+	font-size: 1.3rem;
+}
+
+main {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}

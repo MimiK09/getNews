@@ -1,0 +1,22 @@
+.background-violet {
+	background-color: violet;
+	color: white;
+	padding: 5px;
+}
+
+.background-gray {
+	background-color: gray;
+	color: white;
+	padding: 5px;
+}
+
+.background-green {
+	background-color: green;
+	color: white;
+	padding: 5px;
+}
+
+.status {
+	font-size: 0.8rem;
+	font-style: italic;
+}
