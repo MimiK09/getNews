@@ -102,6 +102,7 @@ const NewsRssPage = (props) => {
 					import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
 				}/generateJSONfromRSSFeed`
 			);
+
 			const responseImage = await axios.get(
 				`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/mediaFromWordpress`
 			);
