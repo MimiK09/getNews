@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const dotenv = require('dotenv').config()
-const serveur = dotenv.parsed.SERVEUR;
+const serveur = process.env.SERVEUR;
 const mongoose = require("mongoose");
 const cors = require("cors");
 
@@ -9,7 +9,7 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(`${dotenv.parsed.DATABASE}/${dotenv.parsed.DATABASE_COLLECTION}`);
+mongoose.connect(`${process.env.DATABASE}/${process.env.DATABASE_COLLECTION}`);
 const db = mongoose.connection;
 
 const newsRedditRoutes = require('./routes/newsRedditRoutes');

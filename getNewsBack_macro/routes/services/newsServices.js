@@ -2,10 +2,7 @@ const axios = require("axios");
 const NewsAPI = require("newsapi");
 const snoowrap = require("snoowrap");
 const puppeteer = require("puppeteer");
-const dotenv = require("dotenv");
 const moment = require("moment-timezone");
-
-dotenv.config();
 
 const username = process.env.REDDIT_USERNAME;
 const password = process.env.REDDIT_PASSWORD;
