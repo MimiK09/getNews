@@ -4,10 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon /Users/mimi/Scripts/getNewsBack/routes/mainRoutes.js",
-    "start:dev": "env-cmd -f .env npx nodemon /Users/mimi/Scripts/getNewsBack/routes/mainRoutes.js",
-    "start:prod": "env-cmd -f .env.production npx nodemon /Users/mimi/Scripts/getNewsBack/routes/mainRoutes.js",
-    "start:test": "env-cmd -f .env.test npx nodemon /Users/mimi/Scripts/getNewsBack/routes/mainRoutes.js"
+    "start": "npx nodemon /Users/mimi/Scripts/getNewsBack/routes/mainRoutes.js"
   },
   "keywords": [],
   "author": "",

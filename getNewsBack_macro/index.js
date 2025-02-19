@@ -4,7 +4,10 @@ const dotenv = require('dotenv').config()
 const serveur = process.env.SERVEUR;
 const mongoose = require("mongoose");
 const cors = require("cors");
+const loadEnv = require("./config/loadEnv"); // Importer la fonction de chargement
 
+// Charger l'environnement
+loadEnv();
 
 app.use(cors());
 app.use(express.json());
