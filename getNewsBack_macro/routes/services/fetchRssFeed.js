@@ -1,6 +1,6 @@
 const axios = require("axios");
 const xml2js = require("xml2js");
-const { convertDate, isDateWithinXDays } = require("./newsServices");
+const { isDateWithinXDays } = require("./newsServices");
 
 const tab_rssUrl = [
 	{
@@ -18,10 +18,9 @@ const fetchRssFeeds = async () => {
 	let listNews = [];
 	// Parcourir les différents flux RSS
 	for (let i = 0; i < tab_rssUrl.length; i++) {
-		console.log("source => ", tab_rssUrl[i])
 		// Faire une requête HTTP GET pour récupérer le contenu du flux RSS
 		const { data } = await axios.get(tab_rssUrl[i].url);
-
+		console.log("source 2 => ", tab_rssUrl[i]);
 		// Parser le contenu XML avec xml2js
 		xml2js.parseString(data, (err, result) => {
 			if (err) {
@@ -32,16 +31,16 @@ const fetchRssFeeds = async () => {
 			const items = result.rss.channel[0].item;
 			items.forEach((item) => {
 				// le cas où je suis sur yonhap FR (traitement de la date)
-				let itemTimestampDate = "";
+				let itemTimestampDate = new Date(item.pubDate[0]).getTime();;
 
-				if (
-					tab_rssUrl[i].name === "yonhapFR" ||
-					tab_rssUrl[i].name === "yonhapEN"
-				) {
-					itemTimestampDate = convertDate(item.pubDate[0]);
-				} else {
-					itemTimestampDate = new Date(item.pubDate[0]).getTime();
-				}
+				// if (
+				// 	tab_rssUrl[i].name === "yonhapFR" ||
+				// 	tab_rssUrl[i].name === "yonhapEN"
+				// ) {
+				// 	itemTimestampDate = new Date(item.pubDate[0]).getTime();
+				// } else {
+				// 	itemTimestampDate = new Date(item.pubDate[0]).getTime();
+				// }
 				// ne s'occuper que des news dont la date de publication est inférieure à X jours
 				const isDateWithinXDay = isDateWithinXDays(itemTimestampDate, 2);
 				// si la date est inférieure à X jours

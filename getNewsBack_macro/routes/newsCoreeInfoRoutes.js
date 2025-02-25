@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const { convertDate, isDateWithinXDays } = require("./services/newsServices");
+const { isDateWithinXDays } = require("./services/newsServices");
 const { fetchArticleContent } = require("./services/validateNews");
 const fetchRssFeeds = require("./services/fetchRssFeed");
 const fetchBDD = require("./services/fetchBDD");
@@ -63,15 +63,12 @@ router.get("/fetchRssFeed", async (req, res) => {
 
 router.post("/validateNewsFromRSSFeed", async (req, res) => {
 	try {
-		console.log("je sauvegarde back1");
 
 		let listNews = req.body.data;
 		for (let news of listNews) {
-			console.log("je sauvegarde back2");
 
 			// Retrouver la news correspondante en BDD
 			const newsFounded = await rssFeedNews.findOne({ url: news.url });
-			console.log("je sauvegarde back3");
 
 			// cas où status = displayed => scrap + changement status
 			if (newsFounded.status == "displayed") {
@@ -83,7 +80,6 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 				newsFounded.status = "waiting";
 				await newsFounded.save();
 			}
-			console.log("je sauvegarde back4");
 		}
 		res.status(200).json({ sucess: "succès value" });
 	} catch (error) {

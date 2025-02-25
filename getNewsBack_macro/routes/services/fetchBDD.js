@@ -1,6 +1,4 @@
 const {
-	convertDate,
-	convertTimestampedDate,
 	isDateWithinXDays,
 } = require("./newsServices");
 
