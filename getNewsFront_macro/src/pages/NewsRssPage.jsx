@@ -317,7 +317,7 @@ const NewsRssPage = (props) => {
 			)}
 			{currentView === "json" && pendingNewsJSON.length > 0 && (
 				<div>
-					<div>
+					<div className="all_action_bloc">
 						<button
 							onClick={(event) => {
 								deleteAllNews(event);
