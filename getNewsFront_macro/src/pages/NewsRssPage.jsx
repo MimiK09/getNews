@@ -31,7 +31,8 @@ const NewsRssPage = (props) => {
 	 * Exemple de contenu :
 	 * ["https://example.com/article1", "https://example.com/article2"]
 	 */
-	const [selectedNewsForDatabase, setSelectedNewsForDatabase] = useState([]);
+	const [selectedArticlesForDatabase, setSelectedArticlesForDatabase] =
+		useState([]);
 
 	/**
 	 * 📌 Liste des actualités en attente de validation sous format JSON.
@@ -84,7 +85,6 @@ const NewsRssPage = (props) => {
 
 	// Get news from RSS feeds
 	const fetchRssNews = async () => {
-		//setCurrentView("none");
 		setMessage("");
 		setIsLoading(true);
 		try {
@@ -101,14 +101,14 @@ const NewsRssPage = (props) => {
 
 	// Manage checkbox on rssNewsList
 	const toggleNewsSelection = (event, url) => {
-		let newTab = [...selectedNewsForDatabase];
-		if (newTab.includes(url)) {
-			let num = newTab.indexOf(url);
-			newTab.splice(num, 1);
+		let selectedArticles = [...selectedArticlesForDatabase];
+		if (selectedArticles.includes(url)) {
+			let articleIndex = selectedArticles.indexOf(url);
+			selectedArticles.splice(articleIndex, 1); // Remove article from selection
 		} else {
-			newTab.push(url);
+			selectedArticles.push(url); // Add article to selection
 		}
-		setSelectedNewsForDatabase(newTab);
+		setSelectedArticlesForDatabase(selectedArticles);
 	};
 
 	// Send news to the Back
@@ -117,12 +117,12 @@ const NewsRssPage = (props) => {
 		setMessage("");
 		setIsLoading(true);
 
-		let newTab = [];
+		let articlesToSend = [];
 
-		for (let i = 0; i < selectedNewsForDatabase.length; i++) {
+		for (let i = 0; i < selectedArticlesForDatabase.length; i++) {
 			for (let j = 0; j < rssNewsList.length; j++) {
-				if (selectedNewsForDatabase[i] == rssNewsList[j].url) {
-					newTab.push(rssNewsList[j]);
+				if (selectedArticlesForDatabase[i] === rssNewsList[j].url) {
+					articlesToSend.push(rssNewsList[j]);
 				}
 			}
 		}
@@ -133,7 +133,7 @@ const NewsRssPage = (props) => {
 					import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
 				}/validateNewsFromRSSFeed`,
 				{
-					data: newTab,
+					data: articlesToSend,
 				}
 			);
 		} catch (error) {
@@ -141,7 +141,7 @@ const NewsRssPage = (props) => {
 		}
 
 		setIsLoading(false);
-		setSelectedNewsForDatabase([]);
+		setSelectedArticlesForDatabase([]);
 		setCurrentView("none");
 		setMessage(
 			"Les news sélectionnées ont bien été envoyées en BDD avec une description complète"
@@ -150,23 +150,24 @@ const NewsRssPage = (props) => {
 
 	// Add a button to get news with waiting status (limit 2 days), JSON format
 	const fetchPendingJsonNews = async () => {
-		//setCurrentView("none");
 		setMessage("");
 		setIsLoading(true);
 
 		try {
-			const responseDetails = await axios.get(
-				`${
-					import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
-				}/generateJSONfromRSSFeed`
-			);
+			const [responseDetails, responseImage] = await Promise.all([
+				axios.get(
+					`${
+						import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
+					}/generateJSONfromRSSFeed`
+				),
+				axios.get(
+					`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/mediaFromWordpress`
+				),
+			]);
 
-			const responseImage = await axios.get(
-				`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/mediaFromWordpress`
-			);
 			setAvailableImages(responseImage.data);
 			setPendingNewsJSON(responseDetails.data.dataFromBack);
-			setCurrentView("json"); // Show JSON news
+			setCurrentView("json");
 		} catch (error) {
 			console.error("Error generating the JSON");
 		}
@@ -257,7 +258,6 @@ const NewsRssPage = (props) => {
 			updateJsonNewsStatus(element.url, element.title, "no change");
 		});
 	};
-	// Find a way to save saved news as cookie and put particular CSS to prevent multiple send to the back
 
 	return (
 		<div className="general-bloc">
