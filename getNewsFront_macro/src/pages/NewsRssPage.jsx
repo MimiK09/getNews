@@ -7,21 +7,79 @@ import "./NewsPages.css";
 import "../App.css";
 
 const NewsRssPage = (props) => {
-	// News from RSS feed coming from back
+	/**
+	 * 📌 Liste des actualités récupérées depuis le flux RSS (BDD après fetch)
+	 * Exemple d'un élément stocké dans rssNewsList :
+	 * {
+	 *   title: "Titre de l'article",
+	 *   url: "https://example.com/article",
+	 *   source: "Nom du site",
+	 *   publishedDate: 1700000000000, // Timestamp en millisecondes
+	 *   complete_description: "Description complète de l'article"
+	 * }
+	 */
 	const [rssNewsList, setRssNewsList] = useState([]);
-	// To manage waiting status
+
+	/**
+	 * 📌 Indicateur d'attente (loading) lors des appels API
+	 * Valeurs possibles : true (en cours de chargement) / false (chargement terminé)
+	 */
 	const [isLoading, setIsLoading] = useState(false);
-	// News to save for ulterior send to the database, only URL
+
+	/**
+	 * 📌 Liste des URLs des actualités sélectionnées pour être envoyées en BDD.
+	 * Exemple de contenu :
+	 * ["https://example.com/article1", "https://example.com/article2"]
+	 */
 	const [selectedNewsForDatabase, setSelectedNewsForDatabase] = useState([]);
-	// News for JSON
+
+	/**
+	 * 📌 Liste des actualités en attente de validation sous format JSON.
+	 * Exemple d'un élément stocké dans pendingNewsJSON :
+	 * {
+	 *   title: "Titre de l'article",
+	 *   url: "https://example.com/article",
+	 *   source: "Nom du site",
+	 *   publishedDate: 1700000000000, // Timestamp
+	 *   complete_description: "Description complète",
+	 *   status: "pending" // Statut en attente
+	 * }
+	 */
 	const [pendingNewsJSON, setPendingNewsJSON] = useState([]);
-	// Change of status on JSON news
+
+	/**
+	 * 📌 Liste des modifications de statut pour les actualités JSON.
+	 * Utilisé pour envoyer les changements (publier, supprimer, conserver).
+	 * Exemple :
+	 * [
+	 *   { url: "https://example.com/article1", title: "Titre 1", status: "published" },
+	 *   { url: "https://example.com/article2", title: "Titre 2", status: "delete" }
+	 * ]
+	 */
 	const [jsonNewsStatusChanges, setJsonNewsStatusChanges] = useState([]);
-	// View selected
+
+	/**
+	 * 📌 Vue actuellement affichée à l'utilisateur.
+	 * Valeurs possibles : "none" (aucune vue), "rss" (vue RSS), "json" (vue JSON)
+	 */
 	const [currentView, setCurrentView] = useState("none");
-	// Message
+
+	/**
+	 * 📌 Message d'information affiché à l'utilisateur.
+	 * Exemple : "Les news ont bien été envoyées en BDD"
+	 */
 	const [message, setMessage] = useState("");
-	// Images
+
+	/**
+	 * 📌 Liste des images disponibles depuis WordPress.
+	 * Exemple d'un élément stocké :
+	 * {
+	 *   id: 123,
+	 *   url: "https://example.com/image.jpg",
+	 *   title: "Titre de l'image",
+	 *   altText: "Description de l'image"
+	 * }
+	 */
 	const [availableImages, setAvailableImages] = useState([]);
 
 	// Get news from RSS feeds
@@ -182,6 +240,23 @@ const NewsRssPage = (props) => {
 		setMessage("");
 	};
 
+	const deleteAllNews = async (event) => {
+		event.preventDefault();
+
+		// Parcourir tous les éléments de pendingNewsJSON et mettre leur statut à "delete"
+		pendingNewsJSON.forEach((element) => {
+			updateJsonNewsStatus(element.url, element.title, "delete");
+		});
+	};
+
+	const retainAllNews = async (event) => {
+		event.preventDefault();
+
+		// Parcourir tous les éléments de pendingNewsJSON et mettre leur statut à "delete"
+		pendingNewsJSON.forEach((element) => {
+			updateJsonNewsStatus(element.url, element.title, "no change");
+		});
+	};
 	// Find a way to save saved news as cookie and put particular CSS to prevent multiple send to the back
 
 	return (
@@ -243,8 +318,20 @@ const NewsRssPage = (props) => {
 			{currentView === "json" && pendingNewsJSON.length > 0 && (
 				<div>
 					<div>
-						<button>Tout supprimer</button>
-						<button>Tout garder</button>
+						<button
+							onClick={(event) => {
+								deleteAllNews(event);
+							}}
+						>
+							Tout supprimer
+						</button>
+						<button
+							onClick={(event) => {
+								retainAllNews(event);
+							}}
+						>
+							Tout garder
+						</button>
 					</div>
 					<form>
 						<div className="NewsRSSContainer">
@@ -255,6 +342,7 @@ const NewsRssPage = (props) => {
 									availableImages={availableImages}
 									convertDate={convertDate}
 									updateJsonNewsStatus={updateJsonNewsStatus}
+									jsonNewsStatusChanges={jsonNewsStatusChanges}
 								/>
 							))}
 						</div>

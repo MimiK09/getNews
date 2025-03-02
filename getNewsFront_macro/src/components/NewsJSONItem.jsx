@@ -6,9 +6,13 @@ const NewsJSONItem = ({
 	availableImages,
 	convertDate,
 	updateJsonNewsStatus,
+	jsonNewsStatusChanges,
 }) => {
+	// url of selected picture
 	const [selectedImage, setSelectedImage] = useState(null);
+	// dropdown menu opened or closed
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	// id of selected picture
 	const [imageID, setimageID] = useState("");
 
 	const handleSelectImage = (imageUrl, imageAltText, imageID) => {
@@ -17,6 +21,10 @@ const NewsJSONItem = ({
 		setimageID(imageID);
 		setIsDropdownOpen(false);
 	};
+
+	const currentStatus = jsonNewsStatusChanges.find(
+		(item) => item.url === element.url
+	)?.status;
 
 	return (
 		<div className="NewsItem">
@@ -30,24 +38,29 @@ const NewsJSONItem = ({
 					type="radio"
 					name={`status-${element.url}`}
 					value="published"
+					checked={currentStatus === "published"}
 					onChange={() =>
 						updateJsonNewsStatus(element.url, element.title, "published")
 					}
 				/>
 				<label>Publiée</label>
+
 				<input
 					type="radio"
 					name={`status-${element.url}`}
 					value="delete"
+					checked={currentStatus === "delete"}
 					onChange={() =>
 						updateJsonNewsStatus(element.url, element.title, "delete")
 					}
 				/>
 				<label>Supprimer</label>
+
 				<input
 					type="radio"
 					name={`status-${element.url}`}
 					value="no change"
+					checked={currentStatus === "no change"}
 					onChange={() =>
 						updateJsonNewsStatus(element.url, element.title, "no change")
 					}
