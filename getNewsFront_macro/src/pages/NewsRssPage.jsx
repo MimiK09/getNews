@@ -100,15 +100,27 @@ const NewsRssPage = (props) => {
 	};
 
 	// Manage checkbox on rssNewsList
+	// const toggleNewsSelection = (event, url) => {
+	// 	let selectedArticles = [...selectedArticlesForDatabase];
+	// 	if (selectedArticles.includes(url)) {
+	// 		let articleIndex = selectedArticles.indexOf(url);
+	// 		selectedArticles.splice(articleIndex, 1); // Remove article from selection
+	// 	} else {
+	// 		selectedArticles.push(url); // Add article to selection
+	// 	}
+	// 	setSelectedArticlesForDatabase(selectedArticles);
+	// };
+
 	const toggleNewsSelection = (event, url) => {
-		let selectedArticles = [...selectedArticlesForDatabase];
-		if (selectedArticles.includes(url)) {
-			let articleIndex = selectedArticles.indexOf(url);
-			selectedArticles.splice(articleIndex, 1); // Remove article from selection
-		} else {
-			selectedArticles.push(url); // Add article to selection
-		}
-		setSelectedArticlesForDatabase(selectedArticles);
+		setSelectedArticlesForDatabase((prev) => {
+			const updatedSet = new Set(prev); // Convertir en Set pour une gestion unique
+			if (updatedSet.has(url)) {
+				updatedSet.delete(url); // Supprimer l'article s'il est déjà sélectionné
+			} else {
+				updatedSet.add(url); // Ajouter l'article s'il n'est pas encore sélectionné
+			}
+			return [...updatedSet]; // Retourner un tableau à partir du Set
+		});
 	};
 
 	// Send news to the Back
@@ -241,21 +253,16 @@ const NewsRssPage = (props) => {
 		setMessage("");
 	};
 
-	const deleteAllNews = async (event) => {
+	const globalAction = async (event, action) => {
 		event.preventDefault();
 
-		// Parcourir tous les éléments de pendingNewsJSON et mettre leur statut à "delete"
+		// Parcourir tous les éléments de pendingNewsJSON et mettre leur statut = action
 		pendingNewsJSON.forEach((element) => {
-			updateJsonNewsStatus(element.url, element.title, "delete");
-		});
-	};
-
-	const retainAllNews = async (event) => {
-		event.preventDefault();
-
-		// Parcourir tous les éléments de pendingNewsJSON et mettre leur statut à "delete"
-		pendingNewsJSON.forEach((element) => {
-			updateJsonNewsStatus(element.url, element.title, "no change");
+			updateJsonNewsStatus(
+				element.url,
+				element.title,
+				(element.status = action)
+			);
 		});
 	};
 
@@ -291,7 +298,12 @@ const NewsRssPage = (props) => {
 					Generate JSON
 				</button>
 			</div>
-			{isLoading && <div className="WaitingMsg">Waiting</div>}
+			{isLoading && (
+				<div className="WaitingMsg">
+					<p>Waiting</p>
+					<img src={loadingGif} />
+				</div>
+			)}
 			{currentView === "rss" && rssNewsList.length > 0 && (
 				<div>
 					<form>
@@ -320,14 +332,14 @@ const NewsRssPage = (props) => {
 					<div className="all_action_bloc">
 						<button
 							onClick={(event) => {
-								deleteAllNews(event);
+								globalAction(event, "delete");
 							}}
 						>
 							Tout supprimer
 						</button>
 						<button
 							onClick={(event) => {
-								retainAllNews(event);
+								globalAction(event, "no change");
 							}}
 						>
 							Tout garder

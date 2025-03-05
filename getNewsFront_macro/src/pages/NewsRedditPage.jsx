@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./NewsPages.css";
 import "../App.css";
+import loadingGif from "../assets/pictures/Loading.gif"
 
 const NewsRedditPage = (props) => {
 	// To manage different messages from the back (success of the req)
@@ -161,7 +162,7 @@ const NewsRedditPage = (props) => {
 				</button>
 
 				{isLoading ? (
-					<div className="WaitingMsg">Waiting</div>
+					<div className="WaitingMsg"><p>Waiting</p><img src={loadingGif} /></div>
 				) : (
 					<div className="NewsRedditContainer">
 						{!newsList ? (
