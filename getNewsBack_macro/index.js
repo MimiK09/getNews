@@ -14,10 +14,7 @@ app.use(express.json());
 // 🛠 Ajout d'un log pour voir la BDD utilisée
 console.log("Connexion à la BDD :", `${process.env.DATABASE}/${process.env.DATABASE_COLLECTION}`);
 
-mongoose.connect(`${process.env.DATABASE}/${process.env.DATABASE_COLLECTION}`, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-});
+mongoose.connect(`${process.env.DATABASE}/${process.env.DATABASE_COLLECTION}`);
 const db = mongoose.connection;
 
 db.on("error", console.error.bind(console, "Erreur de connexion MongoDB :"));

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./NewsPages.css";
 import "../App.css";
-import loadingGif from "../assets/pictures/Loading.gif"
+import loadingGif from "../assets/pictures/Loading.gif";
 
 const NewsRedditPage = (props) => {
 	// To manage different messages from the back (success of the req)
@@ -151,18 +151,23 @@ const NewsRedditPage = (props) => {
 		<>
 			<div className="general-bloc">
 				<h2>Get news and publish on Reddit</h2>
-				<button className="ActionBtn" onClick={handleGettingNews}>
-					Get news
-				</button>
-				<button className="ActionBtn" onClick={handleEvaluateNews}>
-					Evaluate news
-				</button>
-				<button className="ActionBtn" onClick={handleRedditPublish}>
-					Publish on Reddit
-				</button>
+				<div className="view_bloc">
+					<button className="ActionBtn" onClick={handleGettingNews}>
+						Get news
+					</button>
+					<button className="ActionBtn" onClick={handleEvaluateNews}>
+						Evaluate news
+					</button>
+					<button className="ActionBtn" onClick={handleRedditPublish}>
+						Publish on Reddit
+					</button>
+				</div>
 
 				{isLoading ? (
-					<div className="WaitingMsg"><p>Waiting</p><img src={loadingGif} /></div>
+					<div className="WaitingMsg">
+						<p>Waiting</p>
+						<img src={loadingGif} />
+					</div>
 				) : (
 					<div className="NewsRedditContainer">
 						{!newsList ? (

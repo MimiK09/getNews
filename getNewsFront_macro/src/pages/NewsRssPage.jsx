@@ -5,6 +5,7 @@ import NewsItem from "../components/NewsItem";
 import NewsJSONItem from "../components/NewsJSONItem";
 import "./NewsPages.css";
 import "../App.css";
+import loadingGif from "../assets/pictures/Loading.gif";
 
 const NewsRssPage = (props) => {
 	/**

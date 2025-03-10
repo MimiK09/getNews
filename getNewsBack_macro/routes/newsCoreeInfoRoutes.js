@@ -15,9 +15,7 @@ const rssFeedNews = require("../modeles/rssFeedNews");
 router.get("/fetchRssFeed", async (req, res) => {
 	try {
 		const listNewsBDD = await fetchBDD();
-
 		const listNewsRSS = await fetchRssFeeds();
-
 		const checkNews = async () => {
 			let tableau = [];
 			for (const news of listNewsRSS) {

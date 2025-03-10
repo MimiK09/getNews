@@ -41,6 +41,18 @@ const getFlairs = async () => {
 			.getSubreddit("coreedusud")
 			.getLinkFlairTemplates();
 
+		// const flairsResponse = await axios.get(
+		// 	"https://oauth.reddit.com/r/coreedusud/api/link_flair_v2.json",
+		// 	{
+		// 		headers: {
+		// 			Authorization: `Bearer ${accessToken}`,
+		// 			"User-Agent": "make a post",
+		// 		},
+		// 	}
+		// );
+
+		// const flairs = flairsResponse.data;
+
 		return flairs;
 	} catch (error) {
 		// Gérez les erreurs éventuelles
@@ -270,7 +282,7 @@ const publishOnReddit = async (tab) => {
 // 	const hour = dateStr.slice(8, 10);
 // 	const minute = dateStr.slice(10, 12);
 // 	const second = dateStr.slice(12, 14);
-	
+
 // 	// Créer un objet Date avec les valeurs extraites
 // 	const date = new Date(year, month - 1, day, hour, minute, second);
 // 	console.log("date ", date);
