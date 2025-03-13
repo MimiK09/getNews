@@ -31,6 +31,10 @@ app.use(newsThreadRoutes)
 const newsCoreeInfoRoutes = require('./routes/newsCoreeInfoRoutes');
 app.use(newsCoreeInfoRoutes)
 
+app.get("/", (req, res) => {
+	res.status(200).send("je suis sur le serveur");
+});
+
 
 app.listen(serveur, () => {
 	console.log("Serveur backend démarré sur le port ", serveur);
