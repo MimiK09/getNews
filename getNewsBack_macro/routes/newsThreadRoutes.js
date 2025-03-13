@@ -15,7 +15,7 @@ router.get("/login", (req, res) => {
 	res.redirect(authUrl);
 });
 
-// Route pour gérer le callback après l'autorisation
+// Route pour gérer le callback après l'autorisation et récupérer le token
 router.get("/callback", async (req, res) => {
 	const code = req.query.code;
 	if (!code) {
@@ -47,7 +47,7 @@ router.get("/callback", async (req, res) => {
 		global.threadsUserId = user_id;
 
 		// Redirection vers la publication du thread
-		res.redirect("/threads/publish-test");
+		res.redirect("/threads/publish-threads");
 	} catch (error) {
 		console.error(
 			"Erreur lors de l'échange du code:",
@@ -57,8 +57,8 @@ router.get("/callback", async (req, res) => {
 	}
 });
 
-// Route pour publier un thread de test
-router.get("/threads/publish-test", async (req, res) => {
+// Route pour publier un thread
+router.get("/threads/publish-threads", async (req, res) => {
 	if (!global.threadsAccessToken || !global.threadsUserId) {
 		return res
 			.status(401)
@@ -66,7 +66,11 @@ router.get("/threads/publish-test", async (req, res) => {
 	}
 
 	try {
-		const content = "test initial";
+		//Récupérer les datas à intégrer dans les threads
+		const initialContent = "test initial";
+		const contentAnswer = "réponse";
+
+		// Faire une boucle sur la liste des threads à publier
 		// Étape 1: Créer un conteneur de média
 		const createContainer = await axios.post(
 			`https://graph.threads.net/v1.0/me/threads`,
@@ -74,7 +78,7 @@ router.get("/threads/publish-test", async (req, res) => {
 			{
 				params: {
 					media_type: "TEXT",
-					text: content,
+					text: initialContent,
 					access_token: global.threadsAccessToken,
 				},
 				headers: {
@@ -83,18 +87,18 @@ router.get("/threads/publish-test", async (req, res) => {
 			}
 		);
 
-		const mediaContainerId = createContainer.data.id;
+		const containerId = createContainer.data.id;
 
 		// Attente pour le traitement
 		await new Promise((resolve) => setTimeout(resolve, 2000));
 
 		// Étape 2: Publier le conteneur
-		const publishResponse = await axios.post(
+		const publishPost = await axios.post(
 			`https://graph.threads.net/v1.0/me/threads_publish`,
 			null,
 			{
 				params: {
-					creation_id: mediaContainerId,
+					creation_id: containerId,
 					access_token: global.threadsAccessToken,
 				},
 				headers: {
@@ -102,18 +106,20 @@ router.get("/threads/publish-test", async (req, res) => {
 				},
 			}
 		);
-		console.log("Thread publié avec succès => ", content);
 
 		await new Promise((resolve) => setTimeout(resolve, 2000));
 
-		const createResponse = await axios.post(
+		// Gestion d'une réponse - cas d'un post initial trop long
+		// Étape 1: Créer un conteneur de média
+
+		const createResponseContainer = await axios.post(
 			`https://graph.threads.net/v1.0/me/threads`,
 			null,
 			{
 				params: {
 					media_type: "TEXT",
-					text: "suite",
-					reply_to_id: publishResponse.data.id,
+					text: contentAnswer,
+					reply_to_id: publishPost.data.id,
 					access_token: global.threadsAccessToken, // Ajout du token d'accès ici
 				},
 				headers: {
@@ -121,14 +127,14 @@ router.get("/threads/publish-test", async (req, res) => {
 				},
 			}
 		);
-		console.log("createResponse", createResponse.data);
 
+		// Étape 2: Publier le conteneur
 		const publishAnswer = await axios.post(
 			`https://graph.threads.net/v1.0/me/threads_publish`,
 			null,
 			{
 				params: {
-					creation_id: createResponse.data.id,
+					creation_id: createResponseContainer.data.id,
 					access_token: global.threadsAccessToken,
 				},
 				headers: {
@@ -137,14 +143,13 @@ router.get("/threads/publish-test", async (req, res) => {
 			}
 		);
 
-		console.log("publishAnswer", publishAnswer.data);
-
 		// Réponse au client
 		res.status(200).json({
 			success: true,
 			message: "Thread publié avec succès",
-			thread_id: publishResponse.data.id,
-			content: content,
+			post_id: publishPost.data.id,
+			answer_id: publishAnswer.data.id,
+			content: [initialContent, contentAnswer],
 		});
 	} catch (error) {
 		console.error(
