@@ -1,7 +1,63 @@
 import React, { useState } from "react";
 import "./NewsItem.css";
 
-const NewsItem = ({ element, toggleNewsSelection }) => {
+const NewsItem = ({
+	element,
+	toggleNewsSelection,
+	handleAddTag,
+	createdTags,
+}) => {
+	const [newsTags, setNewsTags] = useState([]);
+	const [inputValue, setInputValue] = useState(""); // Valeur en cours de saisie
+	const [showDropdown, setShowDropdown] = useState(false); // Affichage du menu
+
+	// Ajouter un tag lorsqu'un espace ou "Enter" est saisi
+	const handleKeyDown = (event) => {
+		console.log("event ", event);
+		if (
+			(event.key === " " ||
+				event.key === "Enter" ||
+				event.key === "Space" ||
+				event.key === ",") &&
+			inputValue.trim() !== ""
+		) {
+			event.preventDefault();
+			const newTag = inputValue.trim();
+			setNewsTags((prevTags) => {
+				if (!prevTags.includes(newTag)) {
+					return [...prevTags, newTag];
+				}
+				return prevTags;
+			});
+
+			setInputValue(""); // Réinitialiser l’input après ajout
+		}
+	};
+
+	// Gérer l'affichage du menu déroulant
+	const handleInputFocus = () => {
+		setShowDropdown(true);
+	};
+
+	const handleBlur = () => {
+		setTimeout(() => setShowDropdown(false), 200);
+	};
+
+	const removeTag = (tagToRemove) => {
+		setNewsTags((prevTags) => prevTags.filter((tag) => tag !== tagToRemove));
+	};
+
+	const onClickDropdownTag = (tag) => {
+		setNewsTags((prevTags) => {
+			// Vérifie si le tag n'existe pas déjà dans prevTags
+			if (!prevTags.includes(tag)) {
+				return [...prevTags, tag]; // Ajoute le tag seulement s'il n'existe pas
+			}
+			return prevTags; // Sinon, retourne prevTags sans modification
+		});
+		setShowDropdown(false);
+	};
+
 	let newValue = "";
 	let backgroundColorClass = "";
 
@@ -56,13 +112,65 @@ const NewsItem = ({ element, toggleNewsSelection }) => {
 			<p>{element.title}</p>
 			<p>{element.url}</p>
 			<p>{formatTimestamp(element.publishedDate)}</p>
-			<input
-				type="checkbox"
-				id={element.url}
-				name="selected"
-				onChange={(event) => toggleNewsSelection(event, element.url)}
-			/>
-			<label htmlFor={`selected-${element.url}`}>Sauvegarder</label>
+			<div className="section-input-tags">
+				{/* 📌 Conteneur principal de l'input et des tags */}
+				<div className="bloc-input-tags">
+					{/* 📌 Affichage des tags sous forme de petits blocs */}
+					{newsTags.map((tag, index) => (
+						<span key={index} className="selected-tag-item">
+							{tag}
+							<span
+								style={{
+									cursor: "pointer",
+									fontWeight: "bold",
+								}}
+								onClick={() => removeTag(tag)}
+							>
+								×
+							</span>
+						</span>
+					))}
+
+					{/* 📌 Zone de saisie */}
+					<input
+						type="text"
+						placeholder="Ajouter un tag"
+						value={inputValue}
+						onChange={(e) => setInputValue(e.target.value)}
+						onKeyDown={(e) => {
+							handleKeyDown(e);
+							handleAddTag(e, inputValue);
+						}} // Ajoute ou supprime un tag selon la touche pressée
+						onFocus={handleInputFocus} // Affiche la liste des tags existants
+						onBlur={handleBlur} // Masque la liste après un court délai
+						className="input-tags"
+					/>
+				</div>
+
+				{/* 📌 Menu déroulant des tags existants */}
+				{showDropdown && createdTags.length > 0 && (
+					<div className="dropdown-tags">
+						{createdTags.map((tag, index) => (
+							<div
+								key={index}
+								onClick={() => onClickDropdownTag(tag)}
+								className="dropdown-tag-item"
+							>
+								{tag}
+							</div>
+						))}
+					</div>
+				)}
+			</div>
+			<div>
+				<input
+					type="checkbox"
+					id={element.url}
+					name="selected"
+					onChange={(event) => toggleNewsSelection(event, element.url)}
+				/>
+				<label htmlFor={`selected-${element.url}`}>Sauvegarder</label>
+			</div>
 		</div>
 	);
 };

@@ -177,46 +177,42 @@ const NewsRedditPage = (props) => {
 								{newsList.map((element) => (
 									<div key={element._id} className="NewsItem">
 										<p>{element.title}</p>
-										{/* <input
-											type="text"
-											id="title_input"
-											name="title"
-											onChange={(event) => {
-												handleTitleChange(event, element._id);
-											}}
-										/> */}
 										<p>{element.dateComplete}</p>
 										<p className="newsListUrl">{element.link}</p>
-										<label>Flair Reddit : </label>
-										<select
-											name="flair"
-											id="flair"
-											onChange={(event) => {
-												handleFlairChange(event, element._id);
-											}}
-										>
-											<option value="Actualité">Actualité</option>
-											{listFlairs.map((element) => (
-												<option
-													key={element.flair_text}
-													value={element.flair_text}
-												>
-													{element.flair_text}
-												</option>
-											))}
-										</select>
-										<label>Action : </label>
-										<select
-											name="action"
-											id="action"
-											onChange={(event) =>
-												handleActionChange(event, element._id)
-											}
-										>
-											<option value="delete">Supprimer</option>
-											<option value="waiting">En attente</option>
-											<option value="publish">Publier</option>
-										</select>
+										<div>
+											<label>Flair Reddit : </label>
+											<select
+												name="flair"
+												id="flair"
+												onChange={(event) => {
+													handleFlairChange(event, element._id);
+												}}
+											>
+												<option value="Actualité">Actualité</option>
+												{listFlairs.map((element) => (
+													<option
+														key={element.flair_text}
+														value={element.flair_text}
+													>
+														{element.flair_text}
+													</option>
+												))}
+											</select>
+										</div>
+										<div>
+											<label>Action : </label>
+											<select
+												name="action"
+												id="action"
+												onChange={(event) =>
+													handleActionChange(event, element._id)
+												}
+											>
+												<option value="delete">Supprimer</option>
+												<option value="waiting">En attente</option>
+												<option value="publish">Publier</option>
+											</select>
+										</div>
 									</div>
 								))}
 								<button className="ValidateButton" onClick={handleValidateNews}>

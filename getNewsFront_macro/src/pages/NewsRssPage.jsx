@@ -84,6 +84,13 @@ const NewsRssPage = (props) => {
 	 */
 	const [availableImages, setAvailableImages] = useState([]);
 
+	/**
+	 * 📌 Liste des tags saisi
+	 * Exemple d'un élément stocké :
+	 * [tag1, tag2, tag3]
+	 */
+	const [createdTags, setCreatedTags] = useState([]);
+
 	// Get news from RSS feeds
 	const fetchRssNews = async () => {
 		setMessage("");
@@ -99,18 +106,6 @@ const NewsRssPage = (props) => {
 		}
 		setIsLoading(false);
 	};
-
-	// Manage checkbox on rssNewsList
-	// const toggleNewsSelection = (event, url) => {
-	// 	let selectedArticles = [...selectedArticlesForDatabase];
-	// 	if (selectedArticles.includes(url)) {
-	// 		let articleIndex = selectedArticles.indexOf(url);
-	// 		selectedArticles.splice(articleIndex, 1); // Remove article from selection
-	// 	} else {
-	// 		selectedArticles.push(url); // Add article to selection
-	// 	}
-	// 	setSelectedArticlesForDatabase(selectedArticles);
-	// };
 
 	const toggleNewsSelection = (event, url) => {
 		setSelectedArticlesForDatabase((prev) => {
@@ -267,6 +262,29 @@ const NewsRssPage = (props) => {
 		});
 	};
 
+	// Ajouter un tag lorsqu'un espace ou "Enter" est saisi
+	const handleAddTag = (event, inputValue) => {
+		console.log("je passe 1 => ", inputValue);
+		if (
+			(event.key === " " ||
+				event.key === "Enter" ||
+				event.key === "Space" ||
+				event.key === ",") &&
+			inputValue.trim() !== ""
+		) {
+			event.preventDefault();
+			const newTag = inputValue.trim();
+			console.log("je passe 2 input ", inputValue);
+			setCreatedTags((prevTags) => {
+				console.log("je passe 3");
+				if (!prevTags.includes(newTag)) {
+					return [...prevTags, newTag];
+				}
+				return prevTags;
+			});
+		}
+	};
+
 	return (
 		<div className="general-bloc">
 			<h2>Get news from RSS feeds and get a JSON</h2>
@@ -314,6 +332,8 @@ const NewsRssPage = (props) => {
 									key={element.url}
 									element={element}
 									toggleNewsSelection={toggleNewsSelection}
+									createdTags={createdTags}
+									handleAddTag={handleAddTag}
 								/>
 							))}
 						</div>
