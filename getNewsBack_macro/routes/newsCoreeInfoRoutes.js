@@ -49,7 +49,6 @@ router.get("/fetchRssFeed", async (req, res) => {
 		const newTab = await checkNews();
 		const finalTab = [...newTab, ...listNewsBDD];
 		await changeStatus();
-		console.log("newTab", newTab);
 		res.status(200).json({
 			success: true,
 			dataFromBack: finalTab,
@@ -69,12 +68,14 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 			// cas où status = displayed => scrap + changement status
 			if (newsFounded.status == "displayed") {
 				let final_description = await fetchArticleContent(
-					news.url,
-					news.source
+					newsFounded.url,
+					newsFounded.source
 				);
 				newsFounded.complete_description = final_description;
 				newsFounded.status = "waiting";
+				newsFounded.keyword = news.keyword;
 				await newsFounded.save();
+				console.log("newsFounded => ", newsFounded);
 			}
 		}
 		res.status(200).json({ sucess: "succès value" });

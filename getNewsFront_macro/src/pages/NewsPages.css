@@ -8,7 +8,7 @@
 }
 
 .general-bloc button {
-	margin : 5px 0px;
+	margin: 5px 0px;
 	padding: 10px 20px;
 	background-color: #007bff;
 	color: #fff;
@@ -35,7 +35,7 @@
 	border-radius: 5px;
 	border: 1px solid #0056b3;
 	padding: 10px;
-	gap:5px;
+	gap: 10px;
 	/* max-width:calc(100%/3); */
 }
 
@@ -75,17 +75,17 @@ form .ValidateButton:hover {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap : 5px;
+	gap: 5px;
 }
 
 .WaitingMsg p {
 	font-size: 18px;
 	color: #934eb1;
-	animation: pulse 1.5s infinite; 
+	animation: pulse 1.5s infinite;
 }
 
 .WaitingMsg img {
-width: 5%;
+	width: 5%;
 }
 
 /* Définition de l'animation */
@@ -117,16 +117,15 @@ width: 5%;
 	text-align: center;
 }
 
-
-.view_bloc{
+.view_bloc {
 	display: flex;
-	gap:10px;
+	gap: 10px;
 }
 
 .all_action_bloc {
 	display: flex;
 	justify-content: center;
-	gap:10px;
+	gap: 10px;
 	margin: 10px 0px;
 }
 
@@ -148,4 +147,3 @@ width: 5%;
 .general-bloc .view_tag:hover {
 	background-color: #0056b3;
 }
-

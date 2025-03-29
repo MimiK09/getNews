@@ -107,15 +107,76 @@ const NewsRssPage = (props) => {
 		setIsLoading(false);
 	};
 
-	const toggleNewsSelection = (event, url) => {
+	// const toggleNewsSelection = (event, url) => {
+	// 	setSelectedArticlesForDatabase((prev) => {
+	// 		const updatedSet = new Set(prev); // Convertir en Set pour une gestion unique
+	// 		if (updatedSet.has(url)) {
+	// 			updatedSet.delete(url); // Supprimer l'article s'il est déjà sélectionné
+	// 		} else {
+	// 			updatedSet.add(url); // Ajouter l'article s'il n'est pas encore sélectionné
+	// 		}
+	// 		return [...updatedSet]; // Retourner un tableau à partir du Set
+	// 	});
+	// };
+
+	const toggleNewsSelection = (event, url, tag) => {
 		setSelectedArticlesForDatabase((prev) => {
-			const updatedSet = new Set(prev); // Convertir en Set pour une gestion unique
-			if (updatedSet.has(url)) {
-				updatedSet.delete(url); // Supprimer l'article s'il est déjà sélectionné
+			const updatedSet = [...prev];
+
+			// Vérifie si l'URL est déjà présente dans le tableau
+			if (updatedSet.length > 0) {
+				const existingArticle = updatedSet.find(
+					(article) => article.url === url
+				);
+
+				if (existingArticle) {
+					// Si l'article existe déjà, on le retire ou on met à jour son tag si nécessaire
+					if (event.target.checked) {
+						existingArticle.keyword = tag; // Met à jour le tag
+					} else {
+						// Si l'article est désélectionné, on le retire du tableau
+						return updatedSet.filter((article) => article.url !== url);
+					}
+				} else {
+					// Si l'article n'existe pas encore, on l'ajoute
+					updatedSet.push({ url, keyword: tag });
+				}
 			} else {
-				updatedSet.add(url); // Ajouter l'article s'il n'est pas encore sélectionné
+				if (event.target.checked) {
+					updatedSet.push({ url, keyword: tag }); // Met à jour le tag
+				}
 			}
-			return [...updatedSet]; // Retourner un tableau à partir du Set
+
+			return [...updatedSet]; // Retourne le tableau mis à jour
+		});
+	};
+
+	// Fonction pour mettre à jour le tag de la news
+	const handleAddTagForSelectedNews = (url, tag) => {
+		setSelectedArticlesForDatabase((prev) => {
+			console.log("Prev:", prev); // Affiche l'état actuel pour déboguer
+
+			const updatedSet = [...prev];
+
+			console.log("updatedSet", updatedSet);
+
+			// Trouver l'article avec l'URL correspondante
+			const articleIndex = updatedSet.findIndex(
+				(article) => article.url === url
+			);
+			console.log("articleIndex ", articleIndex);
+
+			// Si l'article existe déjà
+			if (articleIndex > -1) {
+				// Si tag est vide, supprimer le tag
+				if (tag === "") {
+					updatedSet[articleIndex].keyword = "";
+				} else {
+					// Sinon, mettre à jour le tag
+					updatedSet[articleIndex].keyword = tag;
+				}
+			}
+			return [...updatedSet];
 		});
 	};
 
@@ -125,17 +186,12 @@ const NewsRssPage = (props) => {
 		setMessage("");
 		setIsLoading(true);
 
-		let articlesToSend = [];
-
-		for (let i = 0; i < selectedArticlesForDatabase.length; i++) {
-			for (let j = 0; j < rssNewsList.length; j++) {
-				if (selectedArticlesForDatabase[i] === rssNewsList[j].url) {
-					articlesToSend.push(rssNewsList[j]);
-				}
-			}
-		}
+		// let articlesToSend = [];
+		let articlesToSend = [...selectedArticlesForDatabase];
 
 		try {
+			console.log("articlesToSend", articlesToSend);
+
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
@@ -264,7 +320,6 @@ const NewsRssPage = (props) => {
 
 	// Ajouter un tag lorsqu'un espace ou "Enter" est saisi
 	const handleAddTag = (event, inputValue) => {
-		console.log("je passe 1 => ", inputValue);
 		if (
 			(event.key === " " ||
 				event.key === "Enter" ||
@@ -274,9 +329,7 @@ const NewsRssPage = (props) => {
 		) {
 			event.preventDefault();
 			const newTag = inputValue.trim();
-			console.log("je passe 2 input ", inputValue);
 			setCreatedTags((prevTags) => {
-				console.log("je passe 3");
 				if (!prevTags.includes(newTag)) {
 					return [...prevTags, newTag];
 				}
@@ -334,6 +387,7 @@ const NewsRssPage = (props) => {
 									toggleNewsSelection={toggleNewsSelection}
 									createdTags={createdTags}
 									handleAddTag={handleAddTag}
+									handleAddTagForSelectedNews={handleAddTagForSelectedNews}
 								/>
 							))}
 						</div>
@@ -368,16 +422,21 @@ const NewsRssPage = (props) => {
 					</div>
 					<form>
 						<div className="NewsRSSContainer">
-							{pendingNewsJSON.map((element) => (
-								<NewsJSONItem
-									key={element.url}
-									element={element}
-									availableImages={availableImages}
-									convertDate={convertDate}
-									updateJsonNewsStatus={updateJsonNewsStatus}
-									jsonNewsStatusChanges={jsonNewsStatusChanges}
-								/>
-							))}
+							{pendingNewsJSON
+								.slice() // Copie le tableau pour éviter de modifier l'état directement
+								.sort((a, b) =>
+									(a.keyword || "").localeCompare(b.keyword || "")
+								) // Trie par keyword
+								.map((element) => (
+									<NewsJSONItem
+										key={element.url}
+										element={element}
+										availableImages={availableImages}
+										convertDate={convertDate}
+										updateJsonNewsStatus={updateJsonNewsStatus}
+										jsonNewsStatusChanges={jsonNewsStatusChanges}
+									/>
+								))}
 						</div>
 						<button
 							className="ValidateButton"

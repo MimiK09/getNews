@@ -11,6 +11,7 @@ const rssFeedNews = mongoose.model(
 		complete_description: { type: String, require: false },
 		status: { type: String, require: true },
 		source: { type: String, require: true },
+		keyword: { type: String, require: false },
 	}
 );
 

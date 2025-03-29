@@ -20,7 +20,7 @@ const fetchRssFeeds = async () => {
 	for (let i = 0; i < tab_rssUrl.length; i++) {
 		// Faire une requête HTTP GET pour récupérer le contenu du flux RSS
 		const { data } = await axios.get(tab_rssUrl[i].url);
-		console.log("source 2 => ", tab_rssUrl[i]);
+		console.log("source  => ", tab_rssUrl[i]);
 		// Parser le contenu XML avec xml2js
 		xml2js.parseString(data, (err, result) => {
 			if (err) {

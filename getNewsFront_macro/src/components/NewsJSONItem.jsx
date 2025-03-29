@@ -32,6 +32,7 @@ const NewsJSONItem = ({
 			<p>Source: {element.source}</p>
 			<p>Description: {element.complete_description}</p>
 			<p>URL: {element.url}</p>
+			<p>keyword: {element.keyword}</p>
 			<p>Date: {convertDate(element.publishedDate)}</p>
 			<div>
 				<input

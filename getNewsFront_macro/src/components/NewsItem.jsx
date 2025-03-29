@@ -6,14 +6,15 @@ const NewsItem = ({
 	toggleNewsSelection,
 	handleAddTag,
 	createdTags,
+	handleAddTagForSelectedNews,
 }) => {
-	const [newsTags, setNewsTags] = useState([]);
+	const [newsTag, setNewsTag] = useState("");
 	const [inputValue, setInputValue] = useState(""); // Valeur en cours de saisie
 	const [showDropdown, setShowDropdown] = useState(false); // Affichage du menu
 
 	// Ajouter un tag lorsqu'un espace ou "Enter" est saisi
-	const handleKeyDown = (event) => {
-		console.log("event ", event);
+	const handleKeyDown = async (event, element) => {
+		// Ne permet l'ajout du tag que si newsTag est vide (un seul tag par NewsItem)
 		if (
 			(event.key === " " ||
 				event.key === "Enter" ||
@@ -23,14 +24,9 @@ const NewsItem = ({
 		) {
 			event.preventDefault();
 			const newTag = inputValue.trim();
-			setNewsTags((prevTags) => {
-				if (!prevTags.includes(newTag)) {
-					return [...prevTags, newTag];
-				}
-				return prevTags;
-			});
-
-			setInputValue(""); // Réinitialiser l’input après ajout
+			await handleAddTagForSelectedNews(element.url, newTag); // Mettre à jour l'état global avec le nouveau tag
+			await setNewsTag(newTag); // Remplace l'ancien tag par le nouveau (s'il n'y en a pas déjà)
+			await setInputValue(""); // Réinitialiser l’input après ajout
 		}
 	};
 
@@ -43,19 +39,15 @@ const NewsItem = ({
 		setTimeout(() => setShowDropdown(false), 200);
 	};
 
-	const removeTag = (tagToRemove) => {
-		setNewsTags((prevTags) => prevTags.filter((tag) => tag !== tagToRemove));
+	const removeTag = async (element) => {
+		await handleAddTagForSelectedNews(element.url, ""); // Supprimer le tag dans l'état global
+		await setNewsTag("");
 	};
 
 	const onClickDropdownTag = (tag) => {
-		setNewsTags((prevTags) => {
-			// Vérifie si le tag n'existe pas déjà dans prevTags
-			if (!prevTags.includes(tag)) {
-				return [...prevTags, tag]; // Ajoute le tag seulement s'il n'existe pas
-			}
-			return prevTags; // Sinon, retourne prevTags sans modification
-		});
-		setShowDropdown(false);
+		console.log("je passe onClick")
+		handleAddTagForSelectedNews(element.url, tag); // Mettre à jour l'état global avec le nouveau tag
+		setNewsTag(tag);
 	};
 
 	let newValue = "";
@@ -116,20 +108,22 @@ const NewsItem = ({
 				{/* 📌 Conteneur principal de l'input et des tags */}
 				<div className="bloc-input-tags">
 					{/* 📌 Affichage des tags sous forme de petits blocs */}
-					{newsTags.map((tag, index) => (
-						<span key={index} className="selected-tag-item">
-							{tag}
+					{newsTag ? (
+						<span className="selected-tag-item">
+							{newsTag}
 							<span
 								style={{
 									cursor: "pointer",
 									fontWeight: "bold",
 								}}
-								onClick={() => removeTag(tag)}
+								onClick={() => removeTag(element)}
 							>
 								×
 							</span>
 						</span>
-					))}
+					) : (
+						""
+					)}
 
 					{/* 📌 Zone de saisie */}
 					<input
@@ -138,7 +132,7 @@ const NewsItem = ({
 						value={inputValue}
 						onChange={(e) => setInputValue(e.target.value)}
 						onKeyDown={(e) => {
-							handleKeyDown(e);
+							handleKeyDown(e, element);
 							handleAddTag(e, inputValue);
 						}} // Ajoute ou supprime un tag selon la touche pressée
 						onFocus={handleInputFocus} // Affiche la liste des tags existants
@@ -167,7 +161,7 @@ const NewsItem = ({
 					type="checkbox"
 					id={element.url}
 					name="selected"
-					onChange={(event) => toggleNewsSelection(event, element.url)}
+					onChange={(event) => toggleNewsSelection(event, element.url, newsTag)}
 				/>
 				<label htmlFor={`selected-${element.url}`}>Sauvegarder</label>
 			</div>

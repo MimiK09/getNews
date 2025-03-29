@@ -26,28 +26,40 @@
 	display: "flex";
 	flex-direction: column;
 }
+/* Conteneur des tags */
 .bloc-input-tags {
-	display: "flex";
-	flex-wrap: "wrap";
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
 	padding: 5px;
+	border: 1px solid #ccc;
 	border-radius: 5px;
-	border: 1px solid black;
-	background-color: greenyellow;
-	gap: 30px;
+	min-height: 35px;
+	max-width: 100%; /* Empêche le conteneur de dépasser */
+	overflow: hidden; /* Cache les débordements */
+	box-sizing: border-box;
 }
 
+/* Tag individuel */
 .selected-tag-item {
-	display: "flex";
-	background-color: #007bff;
+	background: #007bff;
+	color: white;
+	padding: 5px 5px;
 	border-radius: 5px;
-	align-items: "center";
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	max-width: 100%; /* Assure que le tag ne déborde pas */
+	box-sizing: border-box; /* Prend en compte le padding dans la largeur */
+	overflow: hidden;
+	text-overflow: ellipsis; /* Troncature du texte si nécessaire */
+	white-space: nowrap; /* Empêche les tags de se casser sur plusieurs lignes */
 }
 
 .input-tags {
 	border: none;
 	outline: none;
-	background-color: aqua;
-	align-items: "center";
+	align-items: center;
 }
 
 .dropdown-tags {
