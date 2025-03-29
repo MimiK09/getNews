@@ -33,14 +33,6 @@ const fetchRssFeeds = async () => {
 				// le cas où je suis sur yonhap FR (traitement de la date)
 				let itemTimestampDate = new Date(item.pubDate[0]).getTime();;
 
-				// if (
-				// 	tab_rssUrl[i].name === "yonhapFR" ||
-				// 	tab_rssUrl[i].name === "yonhapEN"
-				// ) {
-				// 	itemTimestampDate = new Date(item.pubDate[0]).getTime();
-				// } else {
-				// 	itemTimestampDate = new Date(item.pubDate[0]).getTime();
-				// }
 				// ne s'occuper que des news dont la date de publication est inférieure à X jours
 				const isDateWithinXDay = isDateWithinXDays(itemTimestampDate, 2);
 				// si la date est inférieure à X jours

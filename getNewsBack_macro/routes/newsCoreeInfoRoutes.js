@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const { isDateWithinXDays } = require("./services/newsServices");
-const { fetchArticleContent } = require("./services/validateNews");
+const { fetchArticleContent } = require("./services/scrapNewsCoreeInfo");
 const fetchRssFeeds = require("./services/fetchRssFeed");
-const fetchBDD = require("./services/fetchBDD");
+const fetchBDD = require("./services/fetchBDDCoreeInfo");
 const rssFeedNews = require("../modeles/rssFeedNews");
 
 ////////////////////// NEW //////////////////////////
@@ -49,7 +49,7 @@ router.get("/fetchRssFeed", async (req, res) => {
 		const newTab = await checkNews();
 		const finalTab = [...newTab, ...listNewsBDD];
 		await changeStatus();
-
+		console.log("newTab", newTab);
 		res.status(200).json({
 			success: true,
 			dataFromBack: finalTab,
@@ -61,10 +61,8 @@ router.get("/fetchRssFeed", async (req, res) => {
 
 router.post("/validateNewsFromRSSFeed", async (req, res) => {
 	try {
-
 		let listNews = req.body.data;
 		for (let news of listNews) {
-
 			// Retrouver la news correspondante en BDD
 			const newsFounded = await rssFeedNews.findOne({ url: news.url });
 
@@ -92,7 +90,6 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 
 router.get("/generateJSONfromRSSFeed", async (req, res) => {
 	try {
-
 		const allNews = await rssFeedNews.find();
 
 		let listNews = [];

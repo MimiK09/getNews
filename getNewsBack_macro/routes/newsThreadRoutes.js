@@ -58,7 +58,7 @@ router.get("/callback", async (req, res) => {
 });
 
 // Route pour publier un thread
-router.get("/threads/publish-threads", async (req, res) => {
+router.post("/threads/publish-threads", async (req, res) => {
 	if (!global.threadsAccessToken || !global.threadsUserId) {
 		return res
 			.status(401)
@@ -66,6 +66,17 @@ router.get("/threads/publish-threads", async (req, res) => {
 	}
 
 	try {
+		// prévoir fonction pour traiter un tableau et en faire un nouveau avec des news divisées
+
+		// Prévoir un tableau avec des objets de type
+		// objet avec prop content et en valeur de content : un tableau
+		// si tableau de content est de longueur 1 alors seulement un post
+		// le seul élement serait le initial content
+		// si tableau est de longueur 2 alors post et réponse
+		//// le premier élément du tableau serait le intialContent
+		//// le second serait contentAnswer
+		// si tableau longueur > 2, faire un message de non traitement
+
 		//Récupérer les datas à intégrer dans les threads
 		const initialContent = "test initial";
 		const contentAnswer = "réponse";

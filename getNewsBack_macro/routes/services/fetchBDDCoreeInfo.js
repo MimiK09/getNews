@@ -4,7 +4,7 @@ const {
 
 const rssFeedNews = require("../../modeles/rssFeedNews");
 
-const fetchBDD = async (status) => {
+const fetchBDDCoreeInfo = async (status) => {
 	let listNews = [];
     const rssFeedNewsFounded = await rssFeedNews.find({
         status: { $in: ["waiting", "displayed"] }
@@ -21,4 +21,4 @@ const fetchBDD = async (status) => {
 	return listNews;
 };
 
-module.exports = fetchBDD;
+module.exports = fetchBDDCoreeInfo;

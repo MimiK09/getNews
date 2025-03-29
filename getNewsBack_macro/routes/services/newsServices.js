@@ -41,17 +41,6 @@ const getFlairs = async () => {
 			.getSubreddit("coreedusud")
 			.getLinkFlairTemplates();
 
-		// const flairsResponse = await axios.get(
-		// 	"https://oauth.reddit.com/r/coreedusud/api/link_flair_v2.json",
-		// 	{
-		// 		headers: {
-		// 			Authorization: `Bearer ${accessToken}`,
-		// 			"User-Agent": "make a post",
-		// 		},
-		// 	}
-		// );
-
-		// const flairs = flairsResponse.data;
 
 		return flairs;
 	} catch (error) {
@@ -270,51 +259,6 @@ const publishOnReddit = async (tab) => {
 ///////////////////////////////////////////
 ///////////////////////////////////////////
 
-///////////////////////////////////////////
-// CONVERT DATE FROM YONHAP FORMAT PLUS UTILISE //
-///////////////////////////////////////////
-
-// const convertDate = (dateStr) => {
-// 	// Extraire les parties de la date
-// 	const year = dateStr.slice(0, 4);
-// 	const month = dateStr.slice(4, 6);
-// 	const day = dateStr.slice(6, 8);
-// 	const hour = dateStr.slice(8, 10);
-// 	const minute = dateStr.slice(10, 12);
-// 	const second = dateStr.slice(12, 14);
-
-// 	// Créer un objet Date avec les valeurs extraites
-// 	const date = new Date(year, month - 1, day, hour, minute, second);
-// 	console.log("date ", date);
-
-// 	// Convertir la date en timestamp (en millisecondes)
-// 	return date.getTime();
-// };
-
-///////////////////////////////////////////
-///////////////////////////////////////////
-
-///////////////////////////////////////////
-// CONVERT DATE FROM RSS //
-///////////////////////////////////////////
-
-// const convertTimestampedDate = (dateStr) => {
-// 	// Extraire les parties de la date
-// 	const date = new Date(dateStr);
-
-// 	const day = String(date.getDate()).padStart(2, "0");
-// 	const month = String(date.getMonth() + 1).padStart(2, "0"); // Les mois sont indexés à partir de 0
-// 	const year = date.getFullYear();
-
-// 	return `${day}.${month}.${year}`;
-// };
-
-///////////////////////////////////////////
-///////////////////////////////////////////
-
-///////////////////////////////////////////
-// TIME BETWEEN A DATE AND TODAY WITHIN X DAY //
-///////////////////////////////////////////
 
 const isDateWithinXDays = (date, X) => {
 	// Obtenir la date du jour format timestamp

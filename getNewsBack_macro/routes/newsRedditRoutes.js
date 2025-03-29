@@ -13,6 +13,7 @@ const yonhapNews = require("../modeles/yonhapNews");
 ///////////////////////////////////////////
 router.get("/getNewsForRedditFr", async (req, res) => {
 	try {
+		console.log("route rencontrée")
 		const dataGoogle = await getNewsFromGoogle();
 		const dataYonhap = await scrapeYonhapDataFr();
 		const fullDatas = dataGoogle.concat(dataYonhap);
