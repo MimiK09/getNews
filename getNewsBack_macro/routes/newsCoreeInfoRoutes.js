@@ -99,7 +99,7 @@ router.get("/generateJSONfromRSSFeed", async (req, res) => {
 			// ne s'occuper que des news dont la date de publication est inférieure à X jours
 			const isDateWithinXDay = await isDateWithinXDays(
 				allNews[i].publishedDate,
-				2
+				1
 			);
 
 			// si la date est inférieure à X jours
@@ -196,7 +196,7 @@ router.get("/mediaFromWordpress", async (req, res) => {
 router.delete("/cleandatabase", async (req, res) => {
 	try {
 		const rssFeedNewsFounded = await rssFeedNews.find({
-			status: "first saved",
+			status: "displayed",
 		});
 		for (let i = 0; i < rssFeedNewsFounded.length; i++) {
 			let result = isDateWithinXDays(rssFeedNewsFounded[i].publishedDate, 10);

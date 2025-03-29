@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import NewsItem from "../components/NewsItem";
 import NewsJSONItem from "../components/NewsJSONItem";
@@ -36,8 +36,8 @@ const NewsRssPage = (props) => {
 		useState([]);
 
 	/**
-	 * 📌 Liste des actualités en attente de validation sous format JSON.
-	 * Exemple d'un élément stocké dans pendingNewsJSON :
+	 * 📌 Liste des actualités avec description complète.
+	 * Exemple d'un élément stocké dans pendingLongDescriptionNews :
 	 * {
 	 *   title: "Titre de l'article",
 	 *   url: "https://example.com/article",
@@ -47,7 +47,7 @@ const NewsRssPage = (props) => {
 	 *   status: "pending" // Statut en attente
 	 * }
 	 */
-	const [pendingNewsJSON, setPendingNewsJSON] = useState([]);
+	const [pendingLongDescriptionNews, setPendingLongDescriptionNews] = useState([]);
 
 	/**
 	 * 📌 Liste des modifications de statut pour les actualités JSON.
@@ -92,62 +92,76 @@ const NewsRssPage = (props) => {
 	const [createdTags, setCreatedTags] = useState([]);
 
 	// Get news from RSS feeds
-	const fetchRssNews = async () => {
+	const handleFetchRssNews = useCallback(async () => {
 		setMessage("");
 		setIsLoading(true);
+
 		try {
 			const response = await axios.get(
 				`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/fetchRssFeed`
 			);
 			setRssNewsList(response.data.dataFromBack);
-			setCurrentView("rss"); // Show RSS news
+			setCurrentView("rss");
 		} catch (error) {
-			console.error("Error getting news from RSS");
+			console.error("Error getting news from RSS", error);
+			setMessage(
+				"Une erreur est survenue lors de la récupération des news RSS"
+			);
+		} finally {
+			setIsLoading(false);
 		}
-		setIsLoading(false);
-	};
+	}, []);
 
-	// const toggleNewsSelection = (event, url) => {
-	// 	setSelectedArticlesForDatabase((prev) => {
-	// 		const updatedSet = new Set(prev); // Convertir en Set pour une gestion unique
-	// 		if (updatedSet.has(url)) {
-	// 			updatedSet.delete(url); // Supprimer l'article s'il est déjà sélectionné
-	// 		} else {
-	// 			updatedSet.add(url); // Ajouter l'article s'il n'est pas encore sélectionné
-	// 		}
-	// 		return [...updatedSet]; // Retourner un tableau à partir du Set
-	// 	});
-	// };
+	// Add a button to get news with waiting status (limit 2 days), JSON format
+	const handleFetchPendingJsonNews = useCallback(async () => {
+		setMessage("");
+		setIsLoading(true);
+
+		try {
+			const [responseDetails, responseImage] = await Promise.all([
+				axios.get(
+					`${
+						import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
+					}/generateJSONfromRSSFeed`
+				),
+				axios.get(
+					`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/mediaFromWordpress`
+				),
+			]);
+
+			setAvailableImages(responseImage.data);
+			setPendingLongDescriptionNews(responseDetails.data.dataFromBack);
+			setCurrentView("json");
+		} catch (error) {
+			console.error("Error generating the JSON", error);
+			setMessage("Une erreur est survenue lors de la génération du JSON");
+		} finally {
+			setIsLoading(false);
+		}
+	}, []);
 
 	const toggleNewsSelection = (event, url, tag) => {
+		const isChecked = event.target.checked;
+
 		setSelectedArticlesForDatabase((prev) => {
-			const updatedSet = [...prev];
-
-			// Vérifie si l'URL est déjà présente dans le tableau
-			if (updatedSet.length > 0) {
-				const existingArticle = updatedSet.find(
-					(article) => article.url === url
-				);
-
-				if (existingArticle) {
-					// Si l'article existe déjà, on le retire ou on met à jour son tag si nécessaire
-					if (event.target.checked) {
-						existingArticle.keyword = tag; // Met à jour le tag
-					} else {
-						// Si l'article est désélectionné, on le retire du tableau
-						return updatedSet.filter((article) => article.url !== url);
-					}
-				} else {
-					// Si l'article n'existe pas encore, on l'ajoute
-					updatedSet.push({ url, keyword: tag });
-				}
-			} else {
-				if (event.target.checked) {
-					updatedSet.push({ url, keyword: tag }); // Met à jour le tag
-				}
+			// Si la case est décochée, on retire l'article
+			if (!isChecked) {
+				return prev.filter((article) => article.url !== url);
 			}
 
-			return [...updatedSet]; // Retourne le tableau mis à jour
+			// Si la case est cochée
+			// Vérifier si l'article existe déjà
+			const existingIndex = prev.findIndex((article) => article.url === url);
+
+			if (existingIndex >= 0) {
+				// Mettre à jour le tag si l'article existe déjà
+				const updated = [...prev];
+				updated[existingIndex].keyword = tag;
+				return updated;
+			} else {
+				// Ajouter l'article s'il n'existe pas
+				return [...prev, { url, keyword: tag }];
+			}
 		});
 	};
 
@@ -181,7 +195,7 @@ const NewsRssPage = (props) => {
 	};
 
 	// Send news to the Back
-	const submitSelectedNews = async (event) => {
+	const handleSubmitSelectedNews = async (event) => {
 		event.preventDefault();
 		setMessage("");
 		setIsLoading(true);
@@ -210,59 +224,6 @@ const NewsRssPage = (props) => {
 		setMessage(
 			"Les news sélectionnées ont bien été envoyées en BDD avec une description complète"
 		);
-	};
-
-	// Add a button to get news with waiting status (limit 2 days), JSON format
-	const fetchPendingJsonNews = async () => {
-		setMessage("");
-		setIsLoading(true);
-
-		try {
-			const [responseDetails, responseImage] = await Promise.all([
-				axios.get(
-					`${
-						import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
-					}/generateJSONfromRSSFeed`
-				),
-				axios.get(
-					`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/mediaFromWordpress`
-				),
-			]);
-
-			setAvailableImages(responseImage.data);
-			setPendingNewsJSON(responseDetails.data.dataFromBack);
-			setCurrentView("json");
-		} catch (error) {
-			console.error("Error generating the JSON");
-		}
-
-		setIsLoading(false);
-	};
-
-	const convertDate = (timestamp) => {
-		// Convertir le timestamp en nombre
-		const numericTimestamp = Number(timestamp);
-
-		// Vérifier si la conversion en nombre est correcte
-		if (isNaN(numericTimestamp)) {
-			return "Invalid timestamp";
-		}
-
-		// Convertir le timestamp en une date
-		const date = new Date(numericTimestamp);
-
-		// Vérifier si la date est valide
-		if (isNaN(date.getTime())) {
-			return "Invalid Date";
-		}
-
-		// Récupérer le jour, le mois et l'année
-		const day = String(date.getDate()).padStart(2, "0");
-		const month = String(date.getMonth() + 1).padStart(2, "0");
-		const year = date.getFullYear();
-
-		// Retourner la date au format DD.MM.YYYY
-		return `${day}.${month}.${year}`;
 	};
 
 	// Function to handle status change (publish/delete)
@@ -295,9 +256,35 @@ const NewsRssPage = (props) => {
 			console.error("Error submitting status changes");
 		}
 		setJsonNewsStatusChanges([]);
-		setPendingNewsJSON([]);
+		setPendingLongDescriptionNews([]);
 		setMessage("Les statuts ont bien été mis à jour");
 		setIsLoading(false);
+	};
+
+	const convertDate = (timestamp) => {
+		// Convertir le timestamp en nombre
+		const numericTimestamp = Number(timestamp);
+
+		// Vérifier si la conversion en nombre est correcte
+		if (isNaN(numericTimestamp)) {
+			return "Invalid timestamp";
+		}
+
+		// Convertir le timestamp en une date
+		const date = new Date(numericTimestamp);
+
+		// Vérifier si la date est valide
+		if (isNaN(date.getTime())) {
+			return "Invalid Date";
+		}
+
+		// Récupérer le jour, le mois et l'année
+		const day = String(date.getDate()).padStart(2, "0");
+		const month = String(date.getMonth() + 1).padStart(2, "0");
+		const year = date.getFullYear();
+
+		// Retourner la date au format DD.MM.YYYY
+		return `${day}.${month}.${year}`;
 	};
 
 	const switchView = (view) => {
@@ -308,8 +295,8 @@ const NewsRssPage = (props) => {
 	const globalAction = async (event, action) => {
 		event.preventDefault();
 
-		// Parcourir tous les éléments de pendingNewsJSON et mettre leur statut = action
-		pendingNewsJSON.forEach((element) => {
+		// Parcourir tous les éléments de pendingLongDescriptionNews et mettre leur statut = action
+		pendingLongDescriptionNews.forEach((element) => {
 			updateJsonNewsStatus(
 				element.url,
 				element.title,
@@ -356,7 +343,7 @@ const NewsRssPage = (props) => {
 				<button
 					className="ActionBtn"
 					onClick={() => {
-						fetchRssNews();
+						handleFetchRssNews();
 					}}
 				>
 					Get news
@@ -364,7 +351,7 @@ const NewsRssPage = (props) => {
 				<button
 					className="ActionBtn"
 					onClick={() => {
-						fetchPendingJsonNews();
+						handleFetchPendingJsonNews();
 					}}
 				>
 					Generate JSON
@@ -393,16 +380,14 @@ const NewsRssPage = (props) => {
 						</div>
 						<button
 							className="ValidateButton"
-							onClick={(event) => {
-								submitSelectedNews(event);
-							}}
+							onClick={handleSubmitSelectedNews}
 						>
 							Envoyer en BDD
 						</button>
 					</form>
 				</div>
 			)}
-			{currentView === "json" && pendingNewsJSON.length > 0 && (
+			{currentView === "json" && pendingLongDescriptionNews.length > 0 && (
 				<div>
 					<div className="all_action_bloc">
 						<button
@@ -422,7 +407,7 @@ const NewsRssPage = (props) => {
 					</div>
 					<form>
 						<div className="NewsRSSContainer">
-							{pendingNewsJSON
+							{pendingLongDescriptionNews
 								.slice() // Copie le tableau pour éviter de modifier l'état directement
 								.sort((a, b) =>
 									(a.keyword || "").localeCompare(b.keyword || "")

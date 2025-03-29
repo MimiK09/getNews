@@ -12,7 +12,7 @@ const fetchBDDCoreeInfo = async (status) => {
 
 	// Parcourir les différents élément de la BDD
 	for (let i = 0; i < rssFeedNewsFounded.length; i++) {
-		if (isDateWithinXDays(rssFeedNewsFounded[i].publishedDate, 2)) {
+		if (isDateWithinXDays(rssFeedNewsFounded[i].publishedDate, 1)) {
 			listNews.push(rssFeedNewsFounded[i]);
 		} else {
 			// console.log("News vieille de plus de 2 jours");

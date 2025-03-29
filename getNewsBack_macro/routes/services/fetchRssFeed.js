@@ -34,7 +34,7 @@ const fetchRssFeeds = async () => {
 				let itemTimestampDate = new Date(item.pubDate[0]).getTime();;
 
 				// ne s'occuper que des news dont la date de publication est inférieure à X jours
-				const isDateWithinXDay = isDateWithinXDays(itemTimestampDate, 2);
+				const isDateWithinXDay = isDateWithinXDays(itemTimestampDate, 1);
 				// si la date est inférieure à X jours
 				if (isDateWithinXDay) {
 					const url = item.url || item.link;
