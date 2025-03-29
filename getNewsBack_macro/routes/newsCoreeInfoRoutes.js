@@ -99,7 +99,7 @@ router.get("/generateJSONfromRSSFeed", async (req, res) => {
 			// ne s'occuper que des news dont la date de publication est inférieure à X jours
 			const isDateWithinXDay = await isDateWithinXDays(
 				allNews[i].publishedDate,
-				1
+				2
 			);
 
 			// si la date est inférieure à X jours

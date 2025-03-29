@@ -47,7 +47,9 @@ const NewsRssPage = (props) => {
 	 *   status: "pending" // Statut en attente
 	 * }
 	 */
-	const [pendingLongDescriptionNews, setPendingLongDescriptionNews] = useState([]);
+	const [pendingLongDescriptionNews, setPendingLongDescriptionNews] = useState(
+		[]
+	);
 
 	/**
 	 * 📌 Liste des modifications de statut pour les actualités JSON.
@@ -403,6 +405,13 @@ const NewsRssPage = (props) => {
 							}}
 						>
 							Tout garder
+						</button>
+						<button
+							onClick={(event) => {
+								globalAction(event, "published");
+							}}
+						>
+							Tous publiés
 						</button>
 					</div>
 					<form>
