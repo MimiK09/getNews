@@ -13,7 +13,6 @@ const yonhapNews = require("../modeles/yonhapNews");
 ///////////////////////////////////////////
 router.get("/getNewsForRedditFr", async (req, res) => {
 	try {
-		console.log("route rencontrée")
 		const dataGoogle = await getNewsFromGoogle();
 		const dataYonhap = await scrapeYonhapDataFr();
 		const fullDatas = dataGoogle.concat(dataYonhap);
@@ -35,7 +34,6 @@ router.get("/getNewsForRedditFr", async (req, res) => {
 				});
 				await newYonhapNews.save();
 				savedNews.push(newYonhapNews);
-				console.log("newYonhapNews", newYonhapNews);
 			} else {
 				console.log("la news est déjà en Database : ", yonhapNewsFounded.title);
 			}
@@ -97,7 +95,6 @@ router.get("/evaluateNewsRedditFR", async (req, res) => {
 router.post("/validateNews", async (req, res) => {
 	try {
 		const dataSent = req.body.data;
-		console.log("dataSent ==>", dataSent, "length ==>", dataSent.length);
 
 		for (let j = 0; j < dataSent.length; j++) {
 			if (dataSent[j].action === "publish") {

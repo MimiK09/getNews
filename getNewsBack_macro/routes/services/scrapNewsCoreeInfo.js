@@ -1,5 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const puppeteer = require("puppeteer");
 
 const getSelectorBySource = async (source) => {
 	switch (source) {
@@ -9,7 +10,7 @@ const getSelectorBySource = async (source) => {
 		case "koreaherald":
 			return ".news_content";
 		case "koreatimes":
-			return "#startts";
+			return ".EditorContents_contents__yyFoA";
 		case "joongang":
 			return "#article_body";
 		default:
@@ -38,41 +39,68 @@ const extractTextBetweenBr = async (html) => {
 	return result.trim();
 };
 
+const fetchWithCheerio = async (url, selector, source) => {
+	const response = await axios.get(url, {
+		headers: {
+			"User-Agent":
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
+		},
+	});
+	const html = response.data;
+	const $ = cheerio.load(html);
+
+	if (source === "joongang") {
+		const elementHtml = $(selector).html();
+		if (!elementHtml) return "";
+		return await extractTextBetweenBr(elementHtml);
+	}
+
+	const element = $(selector);
+	if (element.length === 0) return "";
+
+	const paragraphs = element.find("p");
+	if (paragraphs.length === 0) return "";
+
+	const texts = paragraphs.map((i, p) => $(p).text().trim()).get();
+	return texts.join("\n").trim();
+};
+
+const fetchWithPuppeteer = async (url, selector) => {
+	const browser = await puppeteer.launch({ headless: "new" });
+	const page = await browser.newPage();
+
+	await page.setUserAgent(
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0"
+	);
+
+	await page.goto(url, { waitUntil: "networkidle2" });
+	await page.waitForSelector(selector, { timeout: 10000 });
+
+	const content = await page.$$eval(`${selector} p`, (nodes) =>
+		nodes.map((n) => n.innerText.trim()).join("\n")
+	);
+
+	await browser.close();
+	return content;
+};
+
 const fetchArticleContent = async (url, source) => {
+	const selector = await getSelectorBySource(source);
+	if (!selector) {
+		console.error("Source inconnue");
+		return "";
+	}
+
 	try {
-		const response = await axios.get(url);
-		const html = response.data;
-		const $ = cheerio.load(html);
-
-		// Obtenir le sélecteur basé sur la source
-		const selector = await getSelectorBySource(source);
-		if (!selector) {
-			console.error("Source inconnue");
-			return "";
+		// Korea Times est dynamique → Puppeteer car contenu qui évolue (la classe de la div parente)
+		if (source === "koreatimes") {
+			return await fetchWithPuppeteer(url, selector);
 		}
 
-		if (source === "joongang") {
-			// Cas spécifique pour le site avec des balises <br>
-			const elementHtml = $(selector).html();
-			const text = extractTextBetweenBr(elementHtml);
-			return text;
-		} else {
-			// Sélectionner l'élément et récupérer le texte dans les balises <p>
-			const element = $(selector);
-			const paragraphs = element.find("p");
-			const texts = paragraphs.map((i, p) => $(p).text().trim()).get();
-			let final_description = "";
-			if (texts.length === 0) {
-				console.log("Aucun texte trouvé dans les balises <p>.");
-			} else {
-				texts.forEach((text) => {
-					final_description += text;
-				});
-			}
-			return final_description;
-		}
+		// Les autres → Axios + Cheerio
+		return await fetchWithCheerio(url, selector, source);
 	} catch (err) {
-		console.error("Erreur lors du chargement de la page :", err);
+		console.error("Erreur lors du chargement de l'article :", err.message);
 		return "";
 	}
 };

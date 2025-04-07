@@ -3,7 +3,7 @@ const router = express.Router();
 const axios = require("axios");
 const { isDateWithinXDays } = require("./services/newsServices");
 const { fetchArticleContent } = require("./services/scrapNewsCoreeInfo");
-const fetchRssFeeds = require("./services/fetchRssFeed");
+const fetchRSSFeeds = require("./services/fetchRSSFeed");
 const fetchBDD = require("./services/fetchBDDCoreeInfo");
 const rssFeedNews = require("../modeles/rssFeedNews");
 
@@ -15,7 +15,7 @@ const rssFeedNews = require("../modeles/rssFeedNews");
 router.get("/fetchRssFeed", async (req, res) => {
 	try {
 		const listNewsBDD = await fetchBDD();
-		const listNewsRSS = await fetchRssFeeds();
+		const listNewsRSS = await fetchRSSFeeds();
 		const checkNews = async () => {
 			let tableau = [];
 			for (const news of listNewsRSS) {
@@ -75,7 +75,6 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 				newsFounded.status = "waiting";
 				newsFounded.keyword = news.keyword;
 				await newsFounded.save();
-				console.log("newsFounded => ", newsFounded);
 			}
 		}
 		res.status(200).json({ sucess: "succès value" });
@@ -91,9 +90,13 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 
 router.get("/generateJSONfromRSSFeed", async (req, res) => {
 	try {
+		console.log("je passe 1")
 		const allNews = await rssFeedNews.find();
+		console.log("je passe 2")
 
 		let listNews = [];
+		console.log("je passe 3")
+
 
 		for (let i = 0; i < allNews.length; i++) {
 			// ne s'occuper que des news dont la date de publication est inférieure à X jours
@@ -196,7 +199,7 @@ router.get("/mediaFromWordpress", async (req, res) => {
 router.delete("/cleandatabase", async (req, res) => {
 	try {
 		const rssFeedNewsFounded = await rssFeedNews.find({
-			status: "displayed",
+			status: "outdated",
 		});
 		for (let i = 0; i < rssFeedNewsFounded.length; i++) {
 			let result = isDateWithinXDays(rssFeedNewsFounded[i].publishedDate, 10);
@@ -208,5 +211,6 @@ router.delete("/cleandatabase", async (req, res) => {
 		console.error("La suppression n'a pas eu lieu", error.response);
 	}
 });
+
 
 module.exports = router;

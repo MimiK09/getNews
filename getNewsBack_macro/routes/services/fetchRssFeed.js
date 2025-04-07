@@ -14,7 +14,7 @@ const tab_rssUrl = [
 	{ name: "koreatimes", url: "https://www.koreatimes.co.kr/www/rss/rss.xml" },
 ];
 
-const fetchRssFeeds = async () => {
+const fetchRSSFeeds = async () => {
 	let listNews = [];
 	// Parcourir les différents flux RSS
 	for (let i = 0; i < tab_rssUrl.length; i++) {
@@ -54,4 +54,4 @@ const fetchRssFeeds = async () => {
 	return listNews;
 };
 
-module.exports = fetchRssFeeds;
+module.exports = fetchRSSFeeds;
