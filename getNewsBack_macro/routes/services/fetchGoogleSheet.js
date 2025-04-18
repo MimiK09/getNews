@@ -3,6 +3,7 @@ const path = require("path");
 const process = require("process");
 const { authenticate } = require("@google-cloud/local-auth");
 const { google } = require("googleapis");
+const { table } = require("console");
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 
@@ -23,7 +24,7 @@ const CREDENTIALS_PATH = path.join(
 	"credentials.json"
 );
 
-const fetchGoogleSheet = async () => {
+const fetchGoogleSheet = async (range, listColumns) => {
 	try {
 		async function loadSavedCredentialsIfExist() {
 			try {
@@ -80,11 +81,12 @@ const fetchGoogleSheet = async () => {
 			}
 		}
 
-		async function listMajors(auth) {
+		async function listMajors(auth, range, listColumns) {
+			console.log("listColumns", listColumns.length);
 			const sheets = google.sheets({ version: "v4", auth });
 			const res = await sheets.spreadsheets.values.get({
 				spreadsheetId: "1-zQHBYRfAq7VIIGBu2obpMPydRDBAgJi3AGS9jDxQnM",
-				range: "Liste Threads!A:E",
+				range: range,
 			});
 			const rows = res.data.values;
 			if (!rows || rows.length === 0) {
@@ -92,15 +94,28 @@ const fetchGoogleSheet = async () => {
 				return;
 			}
 
-			const tab = [];
-			rows.forEach((row) => {
-				tab.push(`${row[0]}`);
-				console.log(`${row[0]}`);
-			});
-            return tab
+			if (listColumns.length === 1) {
+				const tab = [];
+				rows.forEach((row) => {
+					tab.push(`${row[`${listColumns[0]}`]}`);
+					console.log(`${row[`${listColumns[0]}`]}`);
+				});
+				return tab;
+			} else {
+				const tab = [];
+				rows.forEach((row) => {
+					tab.push({
+						title: `${row[`${listColumns[0]}`]}`,
+						content: `${row[`${listColumns[1]}`]}`,
+					});
+				});
+				return tab;
+			}
 		}
-		const tabToExport = authorize().then(listMajors);
-        return tabToExport
+		const tabToExport = authorize().then((auth) =>
+			listMajors(auth, range, listColumns)
+		);
+		return tabToExport;
 	} catch (error) {
 		console.error;
 	}

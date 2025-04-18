@@ -10,7 +10,7 @@ const getSelectorBySource = async (source) => {
 		case "koreaherald":
 			return ".news_content";
 		case "koreatimes":
-			return ".EditorContents_contents__yyFoA";
+			return "p.editor-p"; // Changement ici
 		case "joongang":
 			return "#article_body";
 		default:
@@ -74,9 +74,10 @@ const fetchWithPuppeteer = async (url, selector) => {
 	);
 
 	await page.goto(url, { waitUntil: "networkidle2" });
-	await page.waitForSelector(selector, { timeout: 10000 });
 
-	const content = await page.$$eval(`${selector} p`, (nodes) =>
+	await page.waitForSelector(selector, { timeout: 5000 });
+
+	const content = await page.$$eval(selector, (nodes) =>
 		nodes.map((n) => n.innerText.trim()).join("\n")
 	);
 
@@ -92,12 +93,11 @@ const fetchArticleContent = async (url, source) => {
 	}
 
 	try {
-		// Korea Times est dynamique → Puppeteer car contenu qui évolue (la classe de la div parente)
 		if (source === "koreatimes") {
+			// Ici, selector est déjà "p.editor-p"
 			return await fetchWithPuppeteer(url, selector);
 		}
 
-		// Les autres → Axios + Cheerio
 		return await fetchWithCheerio(url, selector, source);
 	} catch (err) {
 		console.error("Erreur lors du chargement de l'article :", err.message);

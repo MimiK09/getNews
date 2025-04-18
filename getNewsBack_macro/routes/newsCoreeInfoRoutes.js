@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const { isDateWithinXDays } = require("./services/newsServices");
+const isDateWithinXDays = require("./services/newsServices");
 const { fetchArticleContent } = require("./services/scrapNewsCoreeInfo");
 const fetchRSSFeeds = require("./services/fetchRSSFeed");
 const fetchBDD = require("./services/fetchBDDCoreeInfo");
@@ -71,6 +71,7 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 					newsFounded.url,
 					newsFounded.source
 				);
+				console.log("news en train d'être srappée =>", newsFounded.title)
 				newsFounded.complete_description = final_description;
 				newsFounded.status = "waiting";
 				newsFounded.keyword = news.keyword;
@@ -90,13 +91,9 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 
 router.get("/generateJSONfromRSSFeed", async (req, res) => {
 	try {
-		console.log("je passe 1")
 		const allNews = await rssFeedNews.find();
-		console.log("je passe 2")
 
 		let listNews = [];
-		console.log("je passe 3")
-
 
 		for (let i = 0; i < allNews.length; i++) {
 			// ne s'occuper que des news dont la date de publication est inférieure à X jours
@@ -211,6 +208,5 @@ router.delete("/cleandatabase", async (req, res) => {
 		console.error("La suppression n'a pas eu lieu", error.response);
 	}
 });
-
 
 module.exports = router;

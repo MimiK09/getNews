@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const scrapeYonhapDataFr = require("./services/scrapYonhapData");
 const {
 	getFlairs,
-	scrapeYonhapDataFr,
-	getNewsFromGoogle,
-	publishOnReddit,
-} = require("./services/newsServices");
+	publishOnReddit_link,
+	publishOnReddit_content,
+} = require("./services/redditServices");
+const fetchGoogleSheet = require("./services/fetchGoogleSheet");
+const getNewsFromGoogle = require("./services/fetchGoogleNews");
 const yonhapNews = require("../modeles/yonhapNews");
 
 ///////////////////////////////////////////
@@ -55,7 +57,7 @@ router.post("/publishReddit", async (req, res) => {
 			publishReddit: false,
 		});
 
-		await publishOnReddit(yonhapNewsFounded);
+		await publishOnReddit_link(yonhapNewsFounded);
 
 		for (let i = 0; i < yonhapNewsFounded.length; i++) {
 			const yonhapNewsToUpdate = await yonhapNews.findOne({
@@ -66,6 +68,16 @@ router.post("/publishReddit", async (req, res) => {
 		}
 
 		res.status(200).json({ success: true, data: yonhapNewsFounded });
+	} catch (error) {
+		res.status(500).json({ success: false, error: error.message });
+	}
+});
+
+router.post("/publishReddit_content", async (req, res) => {
+	try {
+		tab = await fetchGoogleSheet("Liste Threads!A:G", [1, 2]);
+		await publishOnReddit_content(tab);
+		res.status(200).json({ success: true, data: tab });
 	} catch (error) {
 		res.status(500).json({ success: false, error: error.message });
 	}
