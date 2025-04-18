@@ -3,7 +3,7 @@
 .env.local
 node_modules
 package-lock.json
-credentials.json
-token.json
+credentials_googlesheet.json
+credentials_googlesheet.json
 secret/
 threads_tokens.json

@@ -3,7 +3,6 @@ const path = require("path");
 const process = require("process");
 const { authenticate } = require("@google-cloud/local-auth");
 const { google } = require("googleapis");
-const { table } = require("console");
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
 
@@ -13,7 +12,7 @@ const TOKEN_PATH = path.join(
 	"services",
 	"documents",
 	"secret",
-	"token.json"
+	"token_googlesheet.json"
 );
 const CREDENTIALS_PATH = path.join(
 	process.cwd(),
@@ -21,7 +20,7 @@ const CREDENTIALS_PATH = path.join(
 	"services",
 	"documents",
 	"secret",
-	"credentials.json"
+	"credentials_googlesheet.json"
 );
 
 const fetchGoogleSheet = async (range, listColumns) => {
@@ -82,7 +81,6 @@ const fetchGoogleSheet = async (range, listColumns) => {
 		}
 
 		async function listMajors(auth, range, listColumns) {
-			console.log("listColumns", listColumns.length);
 			const sheets = google.sheets({ version: "v4", auth });
 			const res = await sheets.spreadsheets.values.get({
 				spreadsheetId: "1-zQHBYRfAq7VIIGBu2obpMPydRDBAgJi3AGS9jDxQnM",
@@ -98,7 +96,9 @@ const fetchGoogleSheet = async (range, listColumns) => {
 				const tab = [];
 				rows.forEach((row) => {
 					tab.push(`${row[`${listColumns[0]}`]}`);
-					console.log(`${row[`${listColumns[0]}`]}`);
+					console.log(
+						`je récupère depuis googlesheet : ${row[`${listColumns[0]}`]}`
+					);
 				});
 				return tab;
 			} else {
@@ -108,6 +108,12 @@ const fetchGoogleSheet = async (range, listColumns) => {
 						title: `${row[`${listColumns[0]}`]}`,
 						content: `${row[`${listColumns[1]}`]}`,
 					});
+					console.log(
+						`je récupère depuis googlesheet : ${{
+							title: `${row[`${listColumns[0]}`]}`,
+							content: `${row[`${listColumns[1]}`]}`,
+						}}`
+					);
 				});
 				return tab;
 			}
