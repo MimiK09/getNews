@@ -196,7 +196,7 @@ const NewsRssPage = (props) => {
 		});
 	};
 
-	// Send selected RSS News to the Server to update status 
+	// Send selected RSS News to the Server to update status
 	const handleSubmitSelectedNews = async (event) => {
 		event.preventDefault();
 		setMessage("");
@@ -348,7 +348,7 @@ const NewsRssPage = (props) => {
 						handleFetchRssNews();
 					}}
 				>
-					Get news
+					Get and select manually
 				</button>
 				<button
 					className="ActionBtn"
@@ -356,8 +356,12 @@ const NewsRssPage = (props) => {
 						handleFetchPendingJsonNews();
 					}}
 				>
-					Generate JSON
+					News w/ description
 				</button>
+
+				<button className="ActionBtn">Get and select auto</button>
+
+				<button className="ActionBtn">Send to GS auto</button>
 			</div>
 			{isLoading && (
 				<div className="WaitingMsg">
