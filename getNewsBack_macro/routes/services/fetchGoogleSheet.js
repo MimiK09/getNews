@@ -93,18 +93,18 @@ const fetchGoogleSheet = async (range, listColumns) => {
 			}
 
 			if (listColumns.length === 1) {
-				const tab = [];
+				const tabWithNewsFromGS = [];
 				rows.forEach((row) => {
-					tab.push(`${row[`${listColumns[0]}`]}`);
+					tabWithNewsFromGS.push(`${row[`${listColumns[0]}`]}`);
 					console.log(
 						`je récupère depuis googlesheet : ${row[`${listColumns[0]}`]}`
 					);
 				});
-				return tab;
+				return tabWithNewsFromGS;
 			} else {
-				const tab = [];
+				const tabWithNewsFromGS = [];
 				rows.forEach((row) => {
-					tab.push({
+					tabWithNewsFromGS.push({
 						title: `${row[`${listColumns[0]}`]}`,
 						content: `${row[`${listColumns[1]}`]}`,
 					});
@@ -115,7 +115,7 @@ const fetchGoogleSheet = async (range, listColumns) => {
 						}}`
 					);
 				});
-				return tab;
+				return tabWithNewsFromGS;
 			}
 		}
 		const tabToExport = authorize().then((auth) =>
