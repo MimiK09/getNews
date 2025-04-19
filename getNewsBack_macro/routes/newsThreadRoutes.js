@@ -13,55 +13,49 @@ const SCOPE = "threads_basic,threads_content_publish";
 router.get("/loginthread", (req, res) => {
 	const authUrl = `https://threads.net/oauth/authorize?client_id=${THREADS_APP_ID}&redirect_uri=${REDIRECT_URI}&scope=${SCOPE}&response_type=code`;
 	console.log("se rendre sur => ", authUrl);
-	res.redirect(authUrl);
+	res.json({ authUrl });
 });
 
 // Route pour gérer le callback après l'autorisation et récupérer le token
 router.get("/callbackloginthread", async (req, res) => {
-	const code = req.query.code;
-	if (!code) {
-		return res.status(400).send("Code d'autorisation manquant");
-	}
-	try {
-		// Préparation des données pour l'échange du code
-		const formData = new URLSearchParams();
-		formData.append("client_id", THREADS_APP_ID);
-		formData.append("client_secret", THREADS_APP_SECRET);
-		formData.append("code", code);
-		formData.append("grant_type", "authorization_code");
-		formData.append("redirect_uri", REDIRECT_URI);
+    const { code } = req.query;  // Utilisation de la déstructuration pour simplifier
 
-		// Échange du code contre un token d'accès
-		const response = await axios.post(
-			"https://graph.threads.net/oauth/access_token",
-			formData.toString(),
-			{
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-				},
-			}
-		);
+    if (!code) {
+        return res.status(400).send("Code d'autorisation manquant");
+    }
 
-		// Stockage des données pour une utilisation ultérieure
-		const { access_token, user_id } = response.data;
+    try {
+        // Préparation des données pour l'échange du code
+        const formData = new URLSearchParams({
+            client_id: THREADS_APP_ID,
+            client_secret: THREADS_APP_SECRET,
+            code,
+            grant_type: 'authorization_code',
+            redirect_uri: REDIRECT_URI
+        });
 
-		const publishResponse = await axios.post(
-			"http://localhost:3000/threads/publish-threads",
-			{ accessToken: access_token, userId: user_id }, // On ne passe pas de body, les tokens sont stockés globalement
-			{
-				headers: { "Content-Type": "application/json" },
-			}
-		);
+        // Échange du code contre un token d'accès
+        const response = await axios.post("https://graph.threads.net/oauth/access_token", formData.toString(), {
+            headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        });
 
-		// Redirection vers la publication du thread
-		res.status(200).send("Thread publié");
-	} catch (error) {
-		console.error(
-			"Erreur lors de l'échange du code:",
-			error.response?.data || error.message
-		);
-		res.status(500).send("Erreur lors de l'échange du code");
-	}
+        // Extraction des données retournées
+        const { access_token, user_id } = response.data;
+
+        // Appel à l'API pour publier les threads (si nécessaire)
+        const publishResponse = await axios.post("http://localhost:3000/threads/publish-threads", {
+            accessToken: access_token,
+            userId: user_id
+        }, {
+            headers: { "Content-Type": "application/json" }
+        });
+
+        // Réponse finale
+        res.status(200).send("Thread publié avec succès");
+    } catch (error) {
+        console.error("Erreur lors de l'échange du code:", error.response?.data || error.message);
+        res.status(500).send("Erreur lors de l'échange du code");
+    }
 });
 
 // Route pour publier un thread
