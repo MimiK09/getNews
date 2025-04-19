@@ -30,7 +30,7 @@ const NewsRssPage = (props) => {
 	/**
 	 * 📌 Liste des URLs des actualités sélectionnées pour être envoyées en BDD.
 	 * Exemple de contenu :
-	 * ["https://example.com/article1", "https://example.com/article2"]
+	 * [{keyword: "test", url: "https://www.koreaherald.com…}, {keyword: "test", url: "https://www.koreaherald.com…}]
 	 */
 	const [selectedArticlesForDatabase, setSelectedArticlesForDatabase] =
 		useState([]);
@@ -196,7 +196,7 @@ const NewsRssPage = (props) => {
 		});
 	};
 
-	// Send news to the Back
+	// Send selected RSS News to the Server to update status 
 	const handleSubmitSelectedNews = async (event) => {
 		event.preventDefault();
 		setMessage("");
@@ -224,7 +224,7 @@ const NewsRssPage = (props) => {
 		setSelectedArticlesForDatabase([]);
 		setCurrentView("none");
 		setMessage(
-			"Les news sélectionnées ont bien été envoyées en BDD avec une description complète"
+			"Les news sélectionnées ont bien été envoyées en BDD et seront actualisées avec une description complète"
 		);
 	};
 

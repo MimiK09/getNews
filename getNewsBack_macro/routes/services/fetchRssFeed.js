@@ -18,7 +18,7 @@ const fetchRSSFeeds = async () => {
 	let listNews = [];
 	// Parcourir les différents flux RSS
 	for (let i = 0; i < tab_rssUrl.length; i++) {
-		console.log("source rss :", tab_rssUrl[i].name)
+		console.log("source rss :", tab_rssUrl[i].name);
 		// Faire une requête HTTP GET pour récupérer le contenu du flux RSS
 		const { data } = await axios.get(tab_rssUrl[i].url);
 		// Parser le contenu XML avec xml2js
@@ -26,29 +26,33 @@ const fetchRSSFeeds = async () => {
 			if (err) {
 				throw new Error("Erreur lors du parsing du flux RSS:", err);
 			}
-
 			// Parcourir et afficher les éléments du flux RSS
 			const items = result.rss.channel[0].item;
-			items.forEach((item) => {
-				// le cas où je suis sur yonhap FR (traitement de la date)
-				let itemTimestampDate = new Date(item.pubDate[0]).getTime();
 
-				// ne s'occuper que des news dont la date de publication est inférieure à X jours
-				const isDateWithinXDay = isDateWithinXDays(itemTimestampDate, 1);
-				// si la date est inférieure à X jours
-				if (isDateWithinXDay) {
-					const url = item.url || item.link;
-					const description = item.description || "";
+			if (!items) {
+				console.log("pas de news sur le flux => ", tab_rssUrl[i].name); // ou return si tu es dans une fonction séparée
+			} else {
+				items.forEach((item) => {
+					// le cas où je suis sur yonhap FR (traitement de la date)
+					let itemTimestampDate = new Date(item.pubDate[0]).getTime();
 
-					listNews.push({
-						title: item.title[0],
-						url: url[0],
-						publishedDate: itemTimestampDate,
-						description: description[0],
-						source: tab_rssUrl[i].name,
-					});
-				}
-			});
+					// ne s'occuper que des news dont la date de publication est inférieure à X jours
+					const isDateWithinXDay = isDateWithinXDays(itemTimestampDate, 1);
+					// si la date est inférieure à X jours
+					if (isDateWithinXDay) {
+						const url = item.url || item.link;
+						const description = item.description || "";
+
+						listNews.push({
+							title: item.title[0],
+							url: url[0],
+							publishedDate: itemTimestampDate,
+							description: description[0],
+							source: tab_rssUrl[i].name,
+						});
+					}
+				});
+			}
 		});
 	}
 	return listNews;

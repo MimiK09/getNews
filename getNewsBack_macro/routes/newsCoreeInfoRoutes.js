@@ -7,15 +7,18 @@ const fetchRSSFeeds = require("./services/fetchRSSFeed");
 const fetchBDD = require("./services/fetchBDDCoreeInfo");
 const rssFeedNews = require("../modeles/rssFeedNews");
 
+const N8N_JSON_URL = process.env.N8N_JSON_URL;
+
 ////////////////////// NEW //////////////////////////
 ////////////////////// NEW //////////////////////////
 ////////////////////// NEW //////////////////////////
 ////////////////////// NEW //////////////////////////
 
-router.get("/fetchRssFeed", async (req, res) => {
+router.get("/testN8N", async (req, res) => {
 	try {
 		const listNewsBDD = await fetchBDD();
 		const listNewsRSS = await fetchRSSFeeds();
+
 		const checkNews = async () => {
 			let tableau = [];
 			for (const news of listNewsRSS) {
@@ -49,6 +52,61 @@ router.get("/fetchRssFeed", async (req, res) => {
 		const newTab = await checkNews();
 		const finalTab = [...newTab, ...listNewsBDD];
 		await changeStatus();
+		let testN8N = {
+			data: finalTab,
+		};
+		await axios
+			.get(N8N_JSON_URL, testN8N)
+			.then((response) => {
+				console.log("Données envoyées avec succès :", response.data);
+			})
+			.catch((error) => {
+				console.error("Erreur lors de l'envoi des données :", error);
+			});
+	} catch (error) {
+		res.status(500).json({ success: false, error: error.message });
+	}
+});
+
+router.get("/fetchRssFeed", async (req, res) => {
+	try {
+		const listNewsBDD = await fetchBDD();
+		const listNewsRSS = await fetchRSSFeeds();
+
+		const checkNews = async () => {
+			let tableau = [];
+			for (const news of listNewsRSS) {
+				const existingBDDNews = await rssFeedNews.findOne({ url: news.url });
+
+				if (!existingBDDNews) {
+					const newRssFeedNews = new rssFeedNews({
+						title: news.title,
+						url: news.url,
+						publishedDate: news.publishedDate,
+						status: "new",
+						source: news.source,
+					});
+					await newRssFeedNews.save();
+					tableau.push(newRssFeedNews);
+				}
+			}
+			return tableau;
+		};
+
+		const changeStatus = async () => {
+			for (const news of newTab) {
+				const existingBDDNews = await rssFeedNews.findOne({ url: news.url });
+				if (existingBDDNews) {
+					existingBDDNews.status = "displayed";
+					await existingBDDNews.save();
+				}
+			}
+		};
+
+		const newTab = await checkNews();
+		const finalTab = [...newTab, ...listNewsBDD];
+		await changeStatus();
+
 		res.status(200).json({
 			success: true,
 			dataFromBack: finalTab,
@@ -71,7 +129,7 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 					newsFounded.url,
 					newsFounded.source
 				);
-				console.log("news en train d'être srappée =>", newsFounded.title)
+				console.log("news en train d'être srappée =>", newsFounded.title);
 				newsFounded.complete_description = final_description;
 				newsFounded.status = "waiting";
 				newsFounded.keyword = news.keyword;
