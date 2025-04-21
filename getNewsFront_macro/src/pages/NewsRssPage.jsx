@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState, useEffect, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import NewsItem from "../components/NewsItem";
+import NewsRSSItem from "../components/NewsRSSItem";
 import NewsJSONItem from "../components/NewsJSONItem";
 import "./NewsPages.css";
 import "../App.css";
@@ -93,6 +93,11 @@ const NewsRssPage = (props) => {
 	 */
 	const [createdTags, setCreatedTags] = useState([]);
 
+	/**
+	 * 📌 Data à envoyer, doit respecter un certain format pour être autorisé
+	 */
+	const [inputText, setInputText] = useState(``);
+
 	// Get news from RSS feeds
 	const handleFetchRssNews = useCallback(async () => {
 		setMessage("");
@@ -104,6 +109,27 @@ const NewsRssPage = (props) => {
 			);
 			setRssNewsList(response.data.dataFromBack);
 			setCurrentView("rss");
+		} catch (error) {
+			console.error("Error getting news from RSS", error);
+			setMessage(
+				"Une erreur est survenue lors de la récupération des news RSS"
+			);
+		} finally {
+			setIsLoading(false);
+		}
+	}, []);
+
+	// Get news from RSS feeds
+	const handleFetchRssNews_simplified = useCallback(async () => {
+		setMessage("");
+		setIsLoading(true);
+
+		try {
+			const response = await axios.get(
+				`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/fetchRssFeed`
+			);
+			setRssNewsList(response.data.dataFromBack);
+			setCurrentView("rss_simplified");
 		} catch (error) {
 			console.error("Error getting news from RSS", error);
 			setMessage(
@@ -222,6 +248,44 @@ const NewsRssPage = (props) => {
 
 		setIsLoading(false);
 		setSelectedArticlesForDatabase([]);
+		setCurrentView("none");
+		setMessage(
+			"Les news sélectionnées ont bien été envoyées en BDD et seront actualisées avec une description complète"
+		);
+	};
+
+	// Send selected RSS News to the Server to update status
+	const handleSubmitSelectedNews_auto = async (event) => {
+		event.preventDefault();
+		setMessage("");
+		setIsLoading(true);
+
+		// Validation du texte
+		if (!inputText.trim().startsWith("{") || !inputText.includes("data")) {
+			setIsLoading(false);
+			setInputText(``);
+			setCurrentView("none");
+			setMessage("⚠️  Les news n'ont pas été envoyées, format interdit ⚠️ ");
+			return;
+		}
+
+		// ➕ Ajoute ici le traitement de ton champ avec les données du formulaire
+		console.log("Données à envoyer :", inputText);
+
+		try {
+			console.log("articlesToSend", articlesToSend);
+			const response = await axios.post(
+				`${
+					import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
+				}/validateNewsFromRSSFeed_auto`,
+				inputText
+			);
+		} catch (error) {
+			console.error("Error sending news or getting details");
+		}
+
+		setIsLoading(false);
+		setInputText(``);
 		setCurrentView("none");
 		setMessage(
 			"Les news sélectionnées ont bien été envoyées en BDD et seront actualisées avec une description complète"
@@ -359,9 +423,23 @@ const NewsRssPage = (props) => {
 					News w/ description
 				</button>
 
-				<button className="ActionBtn">Get and select auto</button>
+				<button
+					className="ActionBtn"
+					onClick={() => {
+						handleFetchRssNews_simplified();
+					}}
+				>
+					Get and select auto
+				</button>
 
-				<button className="ActionBtn">Send to GS auto</button>
+				<button
+					className="ActionBtn"
+					onClick={() => {
+						switchView("form_to_send_news");
+					}}
+				>
+					Send to GS auto
+				</button>
 			</div>
 			{isLoading && (
 				<div className="WaitingMsg">
@@ -374,7 +452,7 @@ const NewsRssPage = (props) => {
 					<form>
 						<div className="NewsRSSContainer">
 							{rssNewsList.map((element) => (
-								<NewsItem
+								<NewsRSSItem
 									key={element.url}
 									element={element}
 									toggleNewsSelection={toggleNewsSelection}
@@ -387,6 +465,30 @@ const NewsRssPage = (props) => {
 						<button
 							className="ValidateButton"
 							onClick={handleSubmitSelectedNews}
+						>
+							Envoyer en BDD
+						</button>
+					</form>
+				</div>
+			)}
+			{currentView === "rss_simplified" && rssNewsList.length > 0 && (
+				<div className="NewsRSSContainer_simplified">
+					{rssNewsList.map((element) => (
+						<p key={element.url}>{element.title}</p>
+					))}
+				</div>
+			)}
+			{currentView === "form_to_send_news" && (
+				<div className="">
+					<form>
+						<textarea
+							placeholder="liste à envoyer"
+							value={inputText}
+							onChange={(e) => setInputText(e.target.value)}
+						/>
+						<button
+							className="ValidateButton"
+							onClick={handleSubmitSelectedNews_auto}
 						>
 							Envoyer en BDD
 						</button>

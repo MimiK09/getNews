@@ -1,126 +1,166 @@
-/* Home.css */
+/* Container principal */
 .container {
 	max-width: 1200px;
 	margin: 0 auto;
-	padding: 50px 20px;
+	padding: 60px 20px;
+	font-family: "Segoe UI", Roboto, sans-serif;
+	color: #1f2937;
 }
 
+/* Header + Footer */
 .header,
 footer {
 	text-align: center;
-	margin-bottom: 50px;
+	margin-bottom: 40px;
 }
 
 .header h1 {
-	font-size: 1.8rem;
+	font-size: 2.2rem;
+	color: #111827;
 }
 
+footer p {
+	color: #6b7280;
+	font-size: 0.9rem;
+}
+
+/* Logo */
 .app-logo {
-	width: 200px;
+	width: 180px;
 	height: auto;
 	margin-bottom: 20px;
 }
 
+/* Introduction */
 .intro-section {
 	text-align: center;
-	margin-bottom: 50px;
+	margin-bottom: 40px;
 }
 
 .intro-section p {
 	font-size: 18px;
-	line-height: 1.6;
+	line-height: 1.7;
+	max-width: 800px;
+	margin: 0 auto;
+	color: #374151;
 }
 
-.features-section,
-.technical-section {
-	margin-bottom: 50px;
-}
-
+/* Titres de sections */
 .features-section h2,
 .technical-section h2 {
-	color: #333;
-	font-size: 24px;
-	margin-bottom: 30px;
+	font-size: 26px;
+	color: #1f2937;
 	text-align: center;
+	margin-bottom: 30px;
+	position: relative;
 }
 
+.features-section h2::after,
+.technical-section h2::after {
+	content: "";
+	display: block;
+	width: 50px;
+	height: 3px;
+	background-color: #3b82f6;
+	margin: 10px auto 0;
+	border-radius: 2px;
+}
+
+/* Listes */
 .features-list,
 .tools-list {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
+	gap: 20px;
 }
 
+/* Cartes */
 .feature-item,
 .tool-item {
-	flex: 0 0 calc(33.33% - 20px);
-	margin: 0 10px 20px;
-	padding: 20px;
-	background-color: #f9f9f9;
-	border-radius: 10px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	transition: transform 0.3s ease-in-out;
+	flex: 0 1 calc(33.33% - 20px);
+	background-color: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	padding: 25px;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .feature-item:hover,
 .tool-item:hover {
 	transform: translateY(-5px);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .feature-item h3,
 .tool-item h3 {
-	color: #333;
+	color: #111827;
 	font-size: 20px;
 	margin-bottom: 10px;
 }
 
 .feature-item p,
 .tool-item p {
-	color: #666;
+	color: #4b5563;
 	font-size: 16px;
 	line-height: 1.6;
 }
 
+/* Call to Action */
 .cta-section {
-	text-align: center;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 15px;
 	margin-top: 50px;
 }
 
 .cta-link {
-	display: inline-block;
-	padding: 15px 30px;
-	background-color: #007bff;
+	padding: 14px 28px;
+	background-color: #3b82f6;
 	color: #fff;
+	border-radius: 8px;
 	text-decoration: none;
-	border-radius: 5px;
-	font-size: 18px;
-	transition: background-color 0.3s ease-in-out;
+	font-size: 16px;
+	font-weight: 600;
+	transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .cta-link:hover {
-	background-color: #0056b3;
+	background-color: #2563eb;
+	transform: translateY(-2px);
 }
 
+/* Galerie d'images */
 .gallery {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	margin-top: 50px;
+	margin-top: 60px;
+	gap: 20px;
 }
 
 .gallery-item {
-	flex: 0 0 calc(25% - 20px);
-	margin: 10px;
+	flex: 0 1 calc(25% - 20px);
 }
 
 .gallery-item img {
 	width: 100%;
 	border-radius: 10px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	object-fit: cover;
 }
 
-.cta-section {
-	display: flex;
-	justify-content: center;
-	gap: 10px;
+/* Responsive */
+@media screen and (max-width: 768px) {
+	.feature-item,
+	.tool-item,
+	.gallery-item {
+		flex: 0 1 100%;
+	}
+
+	.cta-section {
+		flex-direction: column;
+	}
 }

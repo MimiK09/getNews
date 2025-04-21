@@ -1,83 +1,190 @@
-.background-violet {
-	background-color: violet;
-	color: white;
-	padding: 5px;
+.NewsItem {
+	padding: 20px;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	background: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	transition: background 0.2s;
 }
 
-.background-gray {
-	background-color: gray;
-	color: white;
-	padding: 5px;
+.NewsItem:hover {
+	background: #f9fafb;
 }
 
-.background-green {
-	background-color: green;
-	color: white;
-	padding: 5px;
+.NewsItem p {
+	margin: 0;
+	font-size: 15px;
+	color: #374151;
+	line-height: 1.4;
 }
 
-.status {
-	font-size: 0.8rem;
-	font-style: italic;
+.NewsItem p.status {
+	font-weight: 600;
+	font-size: 14px;
+	padding: 4px 8px;
+	border-radius: 8px;
+	display: inline-block;
+	width: fit-content;
 }
 
 .section-input-tags {
-	position: relative;
-	display: "flex";
+	display: flex;
 	flex-direction: column;
+	gap: 10px;
 }
-/* Conteneur des tags */
+
 .bloc-input-tags {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 5px;
-	padding: 5px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	min-height: 35px;
-	max-width: 100%; /* Empêche le conteneur de dépasser */
-	overflow: hidden; /* Cache les débordements */
-	box-sizing: border-box;
+	align-items: center;
+	gap: 8px;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	padding: 8px;
+	background-color: #f3f4f6;
 }
 
-/* Tag individuel */
 .selected-tag-item {
-	background: #007bff;
-	color: white;
-	padding: 5px 5px;
-	border-radius: 5px;
+	background-color: #dbeafe;
+	color: #1e40af;
+	padding: 4px 10px;
+	border-radius: 9999px;
+	font-size: 14px;
 	display: flex;
 	align-items: center;
-	gap: 5px;
-	max-width: 100%; /* Assure que le tag ne déborde pas */
-	box-sizing: border-box; /* Prend en compte le padding dans la largeur */
-	overflow: hidden;
-	text-overflow: ellipsis; /* Troncature du texte si nécessaire */
-	white-space: nowrap; /* Empêche les tags de se casser sur plusieurs lignes */
+	gap: 6px;
 }
 
 .input-tags {
 	border: none;
 	outline: none;
-	align-items: center;
+	font-size: 14px;
+	background: transparent;
+	flex: 1;
+	padding: 6px;
+	color: #111827;
+	min-width: 120px;
 }
 
 .dropdown-tags {
-	position: absolute;
-	top: 100%;
-	left: 0;
-	width: 100%;
-	border: 1px solid #ccc;
-	background-color: "#fff";
-	max-height: 200px;
-	z-index: 10;
-	border-radius: 5px;
-	margin-top: 2px;
+	background-color: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	padding: 8px;
+	margin-top: 4px;
+	max-height: 150px;
+	overflow-y: auto;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .dropdown-tag-item {
-	padding: 8px;
+	padding: 6px 10px;
 	cursor: pointer;
-	border-bottom: 1px solid #ddd;
-	background-color: #f8f8f8;
+	border-radius: 6px;
+	font-size: 14px;
+	color: #374151;
+}
+
+.dropdown-tag-item:hover {
+	background-color: #f3f4f6;
+}
+
+.image-dropdown-container {
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 10px;
+	background-color: #f9fafb;
+}
+
+.image-dropdown-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
+}
+
+.selected-image {
+	width: 60px;
+	height: 60px;
+	object-fit: cover;
+	border-radius: 8px;
+	border: 1px solid #e5e7eb;
+}
+
+.image-dropdown-options {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.image-dropdown-option {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	cursor: pointer;
+	padding: 8px;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	transition: background 0.2s;
+}
+
+.image-dropdown-option:hover {
+	background-color: #f3f4f6;
+}
+
+.thumbnail {
+	width: 100%;
+	height: 100px;
+	object-fit: cover;
+	border-radius: 8px;
+	margin-bottom: 6px;
+}
+
+.NewsItem input[type="radio"],
+.NewsItem input[type="checkbox"] {
+	margin-right: 6px;
+	accent-color: #6366f1;
+	cursor: pointer;
+}
+
+.NewsItem label {
+	font-size: 14px;
+	color: #374151;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+
+/* --- Styles pour le badge de statut --- */
+.NewsItem .status {
+	padding: 4px 10px;
+	border-radius: 20px;
+	font-weight: 600;
+	font-size: 14px;
+	display: inline-block;
+	width: fit-content;
+	color: #ffffff;
+}
+
+/* Couleurs personnalisées */
+.background-violet {
+	background-color: #8b5cf6; /* violet-500 */
+}
+
+.background-green {
+	background-color: #10b981; /* green-500 */
+}
+
+.background-gray {
+	background-color: #9ca3af; /* gray-400 */
+}
+
+/* Aucun fond mais garde le badge propre */
+.NewsItem .status:not([class*="background-"]) {
+	background-color: #e5e7eb; /* gray-200 */
+	color: #374151;
 }

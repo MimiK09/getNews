@@ -30,6 +30,9 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
+	font-family: 'Inter', system-ui, sans-serif; /* ajouté */
+	background-color: #f9fafb; /* ajouté */
+	color: #111827; /* ajouté */
 }
 ol, ul {
 	list-style: none;

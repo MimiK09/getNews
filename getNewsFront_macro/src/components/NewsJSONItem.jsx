@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./NewsJSONItem.css";
+import "./NewsItem.css";
 
 const NewsJSONItem = ({
 	element,

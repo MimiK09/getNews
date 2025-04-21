@@ -55,6 +55,7 @@ router.get("/testN8N", async (req, res) => {
 		let testN8N = {
 			data: finalTab,
 		};
+
 		await axios
 			.get(N8N_JSON_URL, testN8N)
 			.then((response) => {
@@ -124,6 +125,33 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 			const newsFounded = await rssFeedNews.findOne({ url: news.url });
 
 			// cas où status = displayed => scrap + changement status
+			if (newsFounded.status == "displayed") {
+				let final_description = await fetchArticleContent(
+					newsFounded.url,
+					newsFounded.source
+				);
+				console.log("news en train d'être srappée =>", newsFounded.title);
+				newsFounded.complete_description = final_description;
+				newsFounded.status = "waiting";
+				newsFounded.keyword = news.keyword;
+				await newsFounded.save();
+			}
+		}
+		res.status(200).json({ sucess: "succès value" });
+	} catch (error) {
+		res.status(500).json({ success: false, error: error.message });
+	}
+});
+
+router.post("/validateNewsFromRSSFeed_auto", async (req, res) => {
+	try {
+		let listNews = req.body.data;
+		console.log("listNews ", listNews);
+
+		for (let news of listNews) {
+			// Retrouver la news correspondante en BDD
+			const newsFounded = await rssFeedNews.findOne({ title: news.title });
+			// cas où status = displayed => scrap + changement status // si pas displayed, on a pas les data url et source
 			if (newsFounded.status == "displayed") {
 				let final_description = await fetchArticleContent(
 					newsFounded.url,
