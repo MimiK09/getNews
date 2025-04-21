@@ -18,50 +18,60 @@ router.get("/loginthread", (req, res) => {
 
 // Route pour gérer le callback après l'autorisation et récupérer le token
 router.get("/callbackloginthread", async (req, res) => {
-    const { code } = req.query;  // Utilisation de la déstructuration pour simplifier
+	const { code } = req.query; // Utilisation de la déstructuration pour simplifier
 
-    if (!code) {
-        return res.status(400).send("Code d'autorisation manquant");
-    }
+	if (!code) {
+		return res.status(400).send("Code d'autorisation manquant");
+	}
 
-    try {
-        // Préparation des données pour l'échange du code
-        const formData = new URLSearchParams({
-            client_id: THREADS_APP_ID,
-            client_secret: THREADS_APP_SECRET,
-            code,
-            grant_type: 'authorization_code',
-            redirect_uri: REDIRECT_URI
-        });
+	try {
+		// Préparation des données pour l'échange du code
+		const formData = new URLSearchParams({
+			client_id: THREADS_APP_ID,
+			client_secret: THREADS_APP_SECRET,
+			code,
+			grant_type: "authorization_code",
+			redirect_uri: REDIRECT_URI,
+		});
 
-        // Échange du code contre un token d'accès
-        const response = await axios.post("https://graph.threads.net/oauth/access_token", formData.toString(), {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" }
-        });
+		// Échange du code contre un token d'accès
+		const response = await axios.post(
+			"https://graph.threads.net/oauth/access_token",
+			formData.toString(),
+			{
+				headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			}
+		);
 
-        // Extraction des données retournées
-        const { access_token, user_id } = response.data;
+		// Extraction des données retournées
+		const { access_token, user_id } = response.data;
 
-        // Appel à l'API pour publier les threads (si nécessaire)
-        const publishResponse = await axios.post("http://localhost:3000/threads/publish-threads", {
-            accessToken: access_token,
-            userId: user_id
-        }, {
-            headers: { "Content-Type": "application/json" }
-        });
+		// Appel à l'API pour publier les threads (si nécessaire)
+		const publishResponse = await axios.post(
+			"http://localhost:3000/threads/publish-threads",
+			{
+				accessToken: access_token,
+				userId: user_id,
+			},
+			{
+				headers: { "Content-Type": "application/json" },
+			}
+		);
 
-        // Réponse finale
-        res.status(200).send("Thread publié avec succès");
-    } catch (error) {
-        console.error("Erreur lors de l'échange du code:", error.response?.data || error.message);
-        res.status(500).send("Erreur lors de l'échange du code");
-    }
+		// Réponse finale
+		res.status(200).send("Thread publié avec succès");
+	} catch (error) {
+		console.error(
+			"Erreur lors de l'échange du code:",
+			error.response?.data || error.message
+		);
+		res.status(500).send("Erreur lors de l'échange du code");
+	}
 });
 
 // Route pour publier un thread
 router.post("/threads/publish-threads", async (req, res) => {
 	const { accessToken, userId } = req.body;
-
 
 	// 1️⃣ Vérification de l'authentification
 	// Vérifie que l'utilisateur est bien authentifié avant de continuer
@@ -74,7 +84,7 @@ router.post("/threads/publish-threads", async (req, res) => {
 	try {
 		// 2️⃣ Récupération et découpage des news
 		// Récupération des contenus depuis Google Sheets
-		const tabFromGoogleSheet = await fetchGoogleSheet("Liste Threads!A:E",[0]);
+		const tabFromGoogleSheet = await fetchGoogleSheet("Liste Threads!A:E", [0]);
 		// Découpe chaque news en plusieurs parties de moins de 500 caractères
 		const tabWithLittleSections = tabFromGoogleSheet.map((news) => {
 			const sections = [];
@@ -127,7 +137,7 @@ router.post("/threads/publish-threads", async (req, res) => {
 				);
 
 				// Pause pour éviter les limitations de l'API
-				await new Promise((resolve) => setTimeout(resolve, 2000));
+				await new Promise((resolve) => setTimeout(resolve, 500));
 
 				// Étape 2 : Publication du post
 				const publishPost = await axios.post(
@@ -154,7 +164,7 @@ router.post("/threads/publish-threads", async (req, res) => {
 				}
 
 				// Pause avant la publication du post suivant dans le thread
-				await new Promise((resolve) => setTimeout(resolve, 2000));
+				await new Promise((resolve) => setTimeout(resolve, 500));
 			}
 		}
 
@@ -180,4 +190,3 @@ router.post("/threads/publish-threads", async (req, res) => {
 });
 
 module.exports = router;
-
