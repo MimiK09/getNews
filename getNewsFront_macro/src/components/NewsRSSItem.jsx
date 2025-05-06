@@ -45,7 +45,7 @@ const NewsItem = ({
 	};
 
 	const onClickDropdownTag = (tag) => {
-		console.log("je passe onClick")
+		console.log("je passe onClick");
 		handleAddTagForSelectedNews(element.url, tag); // Mettre à jour l'état global avec le nouveau tag
 		setNewsTag(tag);
 	};
@@ -102,7 +102,11 @@ const NewsItem = ({
 		<div key={element.url} className="NewsItem">
 			<p className={`${backgroundColorClass} status`}>{newValue}</p>
 			<p>{element.title}</p>
-			<p>{element.url}</p>
+			<p>
+				<a href={element.url} target="_blank" rel="noopener noreferrer">
+					{element.url}
+				</a>
+			</p>
 			<p>{formatTimestamp(element.publishedDate)}</p>
 			<div className="section-input-tags">
 				{/* 📌 Conteneur principal de l'input et des tags */}

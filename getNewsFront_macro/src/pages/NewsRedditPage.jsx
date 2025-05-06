@@ -63,37 +63,6 @@ const NewsRedditPage = (props) => {
 	};
 
 	// Generate a list of changes on each news
-	// const handleTitleChange = (event, elementId) => {
-	// 	let newTab = [...dataToSend];
-	// 	let updated = false;
-	// 	// Looking for an existing entry in dataToSend with the copy newTab with the same ID
-
-	// 	if (event.target.value.length > 20) {
-	// 		for (let i = 0; i < newTab.length; i++) {
-	// 			console.log("je prends la boucle, tour n°", i);
-	// 			if (newTab[i].id === elementId) {
-	// 				console.log(
-	// 					"je prends le premier if, valeur tableau du if confirmé =>",
-	// 					newTab[i].id
-	// 				);
-	// 				newTab[i].title = event.target.value;
-	// 				updated = true;
-	// 				break;
-	// 			}
-	// 		}
-	// 		// If not existing entry, create one and push it in newTab
-	// 		if (!updated) {
-	// 			console.log("je prends le second if =>", event.target.value);
-	// 			newTab.push({ id: elementId, title: event.target.value });
-	// 		}
-	// 		event.preventDefault();
-	// 		setDataToSend(newTab);
-	// 	} else {
-	// 		console.log("titre trop court");
-	// 	}
-	// };
-
-	// Generate a list of changes on each news
 	const handleFlairChange = (event, elementId) => {
 		let newTab = [...dataToSend];
 		let updated = false;

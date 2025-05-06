@@ -119,27 +119,6 @@ const NewsRssPage = (props) => {
 		}
 	}, []);
 
-	// Get news from RSS feeds
-	const handleFetchRssNews_simplified = useCallback(async () => {
-		setMessage("");
-		setIsLoading(true);
-
-		try {
-			const response = await axios.get(
-				`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/fetchRssFeed`
-			);
-			setRssNewsList(response.data.dataFromBack);
-			setCurrentView("rss_simplified");
-		} catch (error) {
-			console.error("Error getting news from RSS", error);
-			setMessage(
-				"Une erreur est survenue lors de la récupération des news RSS"
-			);
-		} finally {
-			setIsLoading(false);
-		}
-	}, []);
-
 	// Add a button to get news with waiting status (limit 2 days), JSON format
 	const handleFetchPendingJsonNews = useCallback(async () => {
 		setMessage("");
@@ -233,7 +212,6 @@ const NewsRssPage = (props) => {
 
 		try {
 			console.log("articlesToSend", articlesToSend);
-
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
@@ -261,35 +239,63 @@ const NewsRssPage = (props) => {
 		setIsLoading(true);
 
 		// Validation du texte
-		if (!inputText.trim().startsWith("{") || !inputText.includes("data")) {
+		if (!inputText.includes("keyword") || !inputText.includes("title")) {
+			console.log("je passe dans if et je ne scrappe pas");
 			setIsLoading(false);
 			setInputText(``);
 			setCurrentView("none");
-			setMessage("⚠️  Les news n'ont pas été envoyées, format interdit ⚠️ ");
+			setMessage(
+				"⚠️  Les news n'ont pas été envoyées, format sans les données attendues ⚠️ "
+			);
 			return;
 		}
 
-		// ➕ Ajoute ici le traitement de ton champ avec les données du formulaire
-		console.log("Données à envoyer :", inputText);
+		// Parse le contenu s'il est sous forme de string
+		let parsedInput;
+		try {
+			parsedInput = JSON.parse(inputText);
+
+			// Vérifications supplémentaires
+			if (
+				!parsedInput.data ||
+				!Array.isArray(parsedInput.data) ||
+				parsedInput.data.length === 0 ||
+				!parsedInput.data.every(
+					(item) =>
+						item.hasOwnProperty("keyword") &&
+						typeof item.keyword === "string" &&
+						item.hasOwnProperty("title") &&
+						typeof item.title === "string"
+				)
+			) {
+				throw new Error("Format des données invalide.");
+			}
+		} catch (error) {
+			console.error("Erreur parsing ou structure :", error.message);
+			setMessage("⚠️ Format des données incorrect ou structure invalide ⚠️");
+			setIsLoading(false);
+			return;
+		}
 
 		try {
-			console.log("articlesToSend", articlesToSend);
-			const response = await axios.post(
+			await axios.post(
 				`${
 					import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
 				}/validateNewsFromRSSFeed_auto`,
-				inputText
+				parsedInput
 			);
-		} catch (error) {
-			console.error("Error sending news or getting details");
-		}
 
-		setIsLoading(false);
-		setInputText(``);
-		setCurrentView("none");
-		setMessage(
-			"Les news sélectionnées ont bien été envoyées en BDD et seront actualisées avec une description complète"
-		);
+			// On considère que 200 = succès
+			setMessage("✅ Les news ont bien été envoyées et traitées !");
+		} catch (error) {
+			setMessage(
+				"Problème de traitement côté serveur. Traitement impossible ou partiel"
+			);
+		} finally {
+			setIsLoading(false);
+			setInputText("");
+			setCurrentView("none");
+		}
 	};
 
 	// Function to handle status change (publish/delete)
@@ -403,8 +409,14 @@ const NewsRssPage = (props) => {
 				<button className="view_tag" onClick={() => switchView("rss")}>
 					RSS view
 				</button>
+				<button
+					className="view_tag"
+					onClick={() => switchView("rss_simplified")}
+				>
+					RSS view simplified
+				</button>
 				<button className="view_tag" onClick={() => switchView("json")}>
-					JSON view
+					Given News
 				</button>
 				<button
 					className="ActionBtn"
@@ -412,7 +424,7 @@ const NewsRssPage = (props) => {
 						handleFetchRssNews();
 					}}
 				>
-					Get and select manually
+					Get RSS news to select
 				</button>
 				<button
 					className="ActionBtn"
@@ -426,19 +438,10 @@ const NewsRssPage = (props) => {
 				<button
 					className="ActionBtn"
 					onClick={() => {
-						handleFetchRssNews_simplified();
-					}}
-				>
-					Get and select auto
-				</button>
-
-				<button
-					className="ActionBtn"
-					onClick={() => {
 						switchView("form_to_send_news");
 					}}
 				>
-					Send to GS auto
+					(AI) Send chosen RSS news
 				</button>
 			</div>
 			{isLoading && (
@@ -474,7 +477,14 @@ const NewsRssPage = (props) => {
 			{currentView === "rss_simplified" && rssNewsList.length > 0 && (
 				<div className="NewsRSSContainer_simplified">
 					{rssNewsList.map((element) => (
-						<p key={element.url}>{element.title}</p>
+						<p
+							key={element.url}
+							className={
+								element.status == "new" && "background-violet-simplified"
+							}
+						>
+							{element.title}
+						</p>
 					))}
 				</div>
 			)}
@@ -496,7 +506,7 @@ const NewsRssPage = (props) => {
 				</div>
 			)}
 			{currentView === "json" && pendingLongDescriptionNews.length > 0 && (
-				<div>
+				<div className="main-bloc">
 					<div className="all_action_bloc">
 						<button
 							onClick={(event) => {
@@ -519,6 +529,13 @@ const NewsRssPage = (props) => {
 						>
 							Tous publiés
 						</button>
+					</div>
+					<div className="all_keywords_bloc">
+						{[
+							...new Set(pendingLongDescriptionNews.map((el) => el.keyword)),
+						].map((uniqueKeyword) => (
+							<p key={uniqueKeyword}>{uniqueKeyword}</p>
+						))}
 					</div>
 					<form>
 						<div className="NewsRSSContainer">
