@@ -18,7 +18,7 @@ const Homepage = () => {
 
       <section className="intro-section">
         <p>
-          Découvrez une application dont la fonction est de récupérer des infos sur la Corée du Sud, les évaluer et les publier sur Reddit.
+          Découvrez une application dont la fonction est de récupérer des infos sur la Corée du Sud, les évaluer, récupérer les datas associées, reformaliser les données complétées et publier sur différents supports (Reddit & Thread).
         </p>
       </section>
 
@@ -27,15 +27,15 @@ const Homepage = () => {
         <div className="features-list">
           <div className="feature-item">
             <h3>Récupération d'actualités</h3>
-            <p>Des informations sur la Corée obtenues de l'API Google ou de Yonhap (agence de presse sud-coréenne), le tout en un seul clic</p>
+            <p>Des informations sur la Corée obtenues de l'API Google ou de flux RSS de journaux sud-coréens, le tout en un seul clic</p>
           </div>
           <div className="feature-item">
             <h3>Évaluation d'actualités</h3>
-            <p>Les actualités récupérées sont ensuite évaluer pour statuer de leur publication ou non sur r/coréedusud</p>
+            <p>Les actualités récupérées sont ensuite évaluer pour statuer de leur interet. Au besoin, il est possible de récupérer l'article complet de la news sléectionnées</p>
           </div>
           <div className="feature-item">
             <h3>Publication d'actualités</h3>
-            <p>Les actualités validées sont publiées sur Reddit avec le flair préalablement sélectionné</p>
+            <p>Les actualités validées et éventuellement retraitées sont publiées sur Thread ou Reddit</p>
           </div>
         </div>
       </section>
@@ -64,10 +64,10 @@ const Homepage = () => {
 
       <section className="cta-section">
         <Link to="/NewsRedditPage" className="cta-link">
-          Sélectionner des news pour Reddit
+          Sélectionner des liens pour Reddit
         </Link>
         <Link to="/NewsRssPage" className="cta-link">
-          Générer un JSON
+          Générer un JSON d'articles complets
         </Link>
       </section>
 

@@ -173,33 +173,51 @@ const NewsRssPage = (props) => {
 	};
 
 	// Fonction pour mettre à jour le tag de la news
+	// const handleAddTagForSelectedNews = (url, tag) => {
+	// 	setSelectedArticlesForDatabase((prev) => {
+
+	// 		const updatedSet = [...prev];
+	// 		// Trouver l'article avec l'URL correspondante
+	// 		const articleIndex = updatedSet.findIndex(
+	// 			(article) => article.url === url
+	// 		);
+
+	// 		// Si l'article existe déjà
+	// 		if (articleIndex > -1) {
+	// 			// Si tag est vide, supprimer le tag
+	// 			if (tag === "") {
+	// 				updatedSet[articleIndex].keyword = "";
+	// 			} else {
+	// 				// Sinon, mettre à jour le tag
+	// 				updatedSet[articleIndex].keyword = tag;
+	// 			}
+	// 		}
+	// 		return [...updatedSet];
+	// 	});
+	// };
+
 	const handleAddTagForSelectedNews = (url, tag) => {
 		setSelectedArticlesForDatabase((prev) => {
-			console.log("Prev:", prev); // Affiche l'état actuel pour déboguer
-
 			const updatedSet = [...prev];
-
-			console.log("updatedSet", updatedSet);
-
-			// Trouver l'article avec l'URL correspondante
-			const articleIndex = updatedSet.findIndex(
-				(article) => article.url === url
-			);
-			console.log("articleIndex ", articleIndex);
-
-			// Si l'article existe déjà
+			const articleIndex = updatedSet.findIndex((article) => article.url === url);
+	
 			if (articleIndex > -1) {
-				// Si tag est vide, supprimer le tag
 				if (tag === "") {
 					updatedSet[articleIndex].keyword = "";
 				} else {
-					// Sinon, mettre à jour le tag
 					updatedSet[articleIndex].keyword = tag;
 				}
+			} else {
+				// 📌 Ajout automatique si le tag est nouveau
+				if (tag !== "") {
+					updatedSet.push({ url, keyword: tag });
+				}
 			}
-			return [...updatedSet];
+	
+			return updatedSet;
 		});
 	};
+	
 
 	// Send selected RSS News to the Server to update status
 	const handleSubmitSelectedNews = async (event) => {
@@ -462,6 +480,7 @@ const NewsRssPage = (props) => {
 									createdTags={createdTags}
 									handleAddTag={handleAddTag}
 									handleAddTagForSelectedNews={handleAddTagForSelectedNews}
+									selectedArticlesForDatabase={selectedArticlesForDatabase} 
 								/>
 							))}
 						</div>

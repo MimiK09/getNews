@@ -7,6 +7,8 @@ const NewsItem = ({
 	handleAddTag,
 	createdTags,
 	handleAddTagForSelectedNews,
+	selectedArticlesForDatabase
+
 }) => {
 	const [newsTag, setNewsTag] = useState("");
 	const [inputValue, setInputValue] = useState(""); // Valeur en cours de saisie
@@ -161,12 +163,14 @@ const NewsItem = ({
 				)}
 			</div>
 			<div>
-				<input
-					type="checkbox"
-					id={element.url}
-					name="selected"
-					onChange={(event) => toggleNewsSelection(event, element.url, newsTag)}
-				/>
+			<input
+	type="checkbox"
+	id={element.url}
+	name="selected"
+	checked={selectedArticlesForDatabase.some(item => item.url === element.url)} // ← auto-check
+	onChange={(event) => toggleNewsSelection(event, element.url, newsTag)}
+/>
+
 				<label htmlFor={`selected-${element.url}`}>Sauvegarder</label>
 			</div>
 		</div>
