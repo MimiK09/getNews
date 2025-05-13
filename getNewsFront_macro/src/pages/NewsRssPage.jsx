@@ -172,29 +172,6 @@ const NewsRssPage = (props) => {
 		});
 	};
 
-	// Fonction pour mettre à jour le tag de la news
-	// const handleAddTagForSelectedNews = (url, tag) => {
-	// 	setSelectedArticlesForDatabase((prev) => {
-
-	// 		const updatedSet = [...prev];
-	// 		// Trouver l'article avec l'URL correspondante
-	// 		const articleIndex = updatedSet.findIndex(
-	// 			(article) => article.url === url
-	// 		);
-
-	// 		// Si l'article existe déjà
-	// 		if (articleIndex > -1) {
-	// 			// Si tag est vide, supprimer le tag
-	// 			if (tag === "") {
-	// 				updatedSet[articleIndex].keyword = "";
-	// 			} else {
-	// 				// Sinon, mettre à jour le tag
-	// 				updatedSet[articleIndex].keyword = tag;
-	// 			}
-	// 		}
-	// 		return [...updatedSet];
-	// 	});
-	// };
 
 	const handleAddTagForSelectedNews = (url, tag) => {
 		setSelectedArticlesForDatabase((prev) => {
@@ -229,7 +206,7 @@ const NewsRssPage = (props) => {
 		let articlesToSend = [...selectedArticlesForDatabase];
 
 		try {
-			console.log("articlesToSend", articlesToSend);
+			console.log("Articles envoyées en BDD", articlesToSend);
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
@@ -258,7 +235,6 @@ const NewsRssPage = (props) => {
 
 		// Validation du texte
 		if (!inputText.includes("keyword") || !inputText.includes("title")) {
-			console.log("je passe dans if et je ne scrappe pas");
 			setIsLoading(false);
 			setInputText(``);
 			setCurrentView("none");
