@@ -9,6 +9,7 @@ const {
 const fetchGoogleSheet = require("./services/fetchGoogleSheet");
 const getNewsFromGoogle = require("./services/fetchGoogleNews");
 const yonhapNews = require("../modeles/yonhapNews");
+const validateNewsReddit = require('../middlewares/validateNewsReddit');
 
 ///////////////////////////////////////////
 // API get news from google & Yonhap
@@ -16,7 +17,10 @@ const yonhapNews = require("../modeles/yonhapNews");
 router.get("/getNewsForRedditFr", async (req, res) => {
 	try {
 		const dataGoogle = await getNewsFromGoogle();
+		console.log("getNewsFromGoogle")
 		const dataYonhap = await scrapeYonhapDataFr();
+		console.log("scrapeYonhapDataFr")
+
 		const fullDatas = dataGoogle.concat(dataYonhap);
 		let savedNews = [];
 
@@ -104,7 +108,7 @@ router.get("/evaluateNewsRedditFR", async (req, res) => {
 ///////////////////////////////////////////
 // API pour valider les news
 ///////////////////////////////////////////
-router.post("/validateNews", async (req, res) => {
+router.post("/validateNews", validateNewsReddit, async (req, res) => {
 	try {
 		const dataSent = req.body.data;
 

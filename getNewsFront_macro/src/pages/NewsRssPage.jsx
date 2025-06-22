@@ -125,22 +125,35 @@ const NewsRssPage = (props) => {
 		setIsLoading(true);
 
 		try {
-			const [responseDetails, responseImage] = await Promise.all([
-				axios.get(
-					`${
-						import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
-					}/generateJSONfromRSSFeed`
-				),
-				axios.get(
-					`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/mediaFromWordpress`
-				),
-			]);
+			// Appel principal pour les données JSON (critique)
+			const responseDetails = await axios.get(
+				`${
+					import.meta.env.VITE_REACT_APP_SERVER_ADDRESS
+				}/generateJSONfromRSSFeed`
+			);
 
-			setAvailableImages(responseImage.data);
+			// Définir les données principales
 			setPendingLongDescriptionNews(responseDetails.data.dataFromBack);
 			setCurrentView("json");
+
+			// Appel secondaire pour les images (optionnel)
+			try {
+				const responseImage = await axios.get(
+					`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/mediaFromWordpress`
+				);
+				setAvailableImages(responseImage.data);
+			} catch (imageError) {
+				console.warn(
+					"Impossible de récupérer les médias WordPress:",
+					imageError
+				);
+				// Définir un état par défaut pour les images ou garder l'état précédent
+				setAvailableImages([]);
+				// Optionnel : informer l'utilisateur de manière discrète
+				setMessage("Données chargées (médias indisponibles temporairement)");
+			}
 		} catch (error) {
-			console.error("Error generating the JSON", error);
+			console.error("Erreur lors de la génération du JSON", error);
 			setMessage("Une erreur est survenue lors de la génération du JSON");
 		} finally {
 			setIsLoading(false);
@@ -172,12 +185,13 @@ const NewsRssPage = (props) => {
 		});
 	};
 
-
 	const handleAddTagForSelectedNews = (url, tag) => {
 		setSelectedArticlesForDatabase((prev) => {
 			const updatedSet = [...prev];
-			const articleIndex = updatedSet.findIndex((article) => article.url === url);
-	
+			const articleIndex = updatedSet.findIndex(
+				(article) => article.url === url
+			);
+
 			if (articleIndex > -1) {
 				if (tag === "") {
 					updatedSet[articleIndex].keyword = "";
@@ -190,11 +204,10 @@ const NewsRssPage = (props) => {
 					updatedSet.push({ url, keyword: tag });
 				}
 			}
-	
+
 			return updatedSet;
 		});
 	};
-	
 
 	// Send selected RSS News to the Server to update status
 	const handleSubmitSelectedNews = async (event) => {
@@ -456,7 +469,7 @@ const NewsRssPage = (props) => {
 									createdTags={createdTags}
 									handleAddTag={handleAddTag}
 									handleAddTagForSelectedNews={handleAddTagForSelectedNews}
-									selectedArticlesForDatabase={selectedArticlesForDatabase} 
+									selectedArticlesForDatabase={selectedArticlesForDatabase}
 								/>
 							))}
 						</div>
