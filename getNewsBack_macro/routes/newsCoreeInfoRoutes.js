@@ -6,6 +6,7 @@ const { fetchArticleContent } = require("./services/scrapNewsCoreeInfo");
 const fetchRSSFeeds = require("./services/fetchRSSFeed");
 const fetchBDD = require("./services/fetchBDDCoreeInfo");
 const rssFeedNews = require("../modeles/rssFeedNews");
+const { validateNewsFromRSSFeed } = require('../middlewares/validateNewsCoreeInfo');
 
 const N8N_JSON_URL = process.env.N8N_JSON_URL;
 
@@ -124,7 +125,7 @@ router.get("/fetchRssFeed", async (req, res) => {
 /**
  * Validate selected news manually
  */
-router.post("/validateNewsFromRSSFeed", async (req, res) => {
+router.post("/validateNewsFromRSSFeed", validateNewsFromRSSFeed, async (req, res) => {
 	try {
 		const listNews = req.body.data;
 		let successCount = 0;
@@ -163,7 +164,7 @@ router.post("/validateNewsFromRSSFeed", async (req, res) => {
 /**
  * Validate news from auto input
  */
-router.post("/validateNewsFromRSSFeed_auto", async (req, res) => {
+router.post("/validateNewsFromRSSFeed_auto", validateNewsFromRSSFeed, async (req, res) => {
 	try {
 		const listNews = req.body.data;
 		let successCount = 0;
