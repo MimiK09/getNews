@@ -164,7 +164,7 @@ router.post("/validateNewsFromRSSFeed", validateNewsFromRSSFeed, async (req, res
 /**
  * Validate news from auto input
  */
-router.post("/validateNewsFromRSSFeed_auto", validateNewsFromRSSFeed, async (req, res) => {
+router.post("/validateNewsFromRSSFeed_auto", async (req, res) => {
 	try {
 		const listNews = req.body.data;
 		let successCount = 0;
