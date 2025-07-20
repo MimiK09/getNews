@@ -17,6 +17,7 @@ const getNewsFromGoogle = async () => {
 	const daysBeforeFormatted = daysBefore.toISOString().split("T")[0];
 
 	try {
+		console.log("je passe et je débute sur google news");
 		const newsapi = new NewsAPI(`${google_news_api}`);
 		const response = await newsapi.v2.everything({
 			q: "corée",
@@ -25,7 +26,8 @@ const getNewsFromGoogle = async () => {
 			from: daysBeforeFormatted,
 			searchIn: "title,description",
 		});
-
+		console.log("je passe et je débute sur google news 2");
+		console.log("je récupère = >", response.articles);
 		let articleList = response.articles;
 		let googleDatas = [];
 
@@ -47,6 +49,8 @@ const getNewsFromGoogle = async () => {
 				dateComplete: newDateFormatted,
 			});
 		}
+		console.log("je passe et je débute sur google news 2");
+		console.log("je récupère = >", googleDatas);
 		return googleDatas;
 	} catch (error) {
 		console.error("problème lors de la récupération des données google", error);

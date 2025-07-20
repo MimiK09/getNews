@@ -17,9 +17,9 @@ const validateNewsReddit = require('../middlewares/validateNewsReddit');
 router.get("/getNewsForRedditFr", async (req, res) => {
 	try {
 		const dataGoogle = await getNewsFromGoogle();
-		console.log("getNewsFromGoogle")
+		console.log("fin getNewsFromGoogle")
 		const dataYonhap = await scrapeYonhapDataFr();
-		console.log("scrapeYonhapDataFr")
+		console.log("fin scrapeYonhapDataFr")
 
 		const fullDatas = dataGoogle.concat(dataYonhap);
 		let savedNews = [];

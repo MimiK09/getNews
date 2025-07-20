@@ -485,14 +485,14 @@ const NewsRssPage = (props) => {
 			{currentView === "rss_simplified" && rssNewsList.length > 0 && (
 				<div className="NewsRSSContainer_simplified">
 					{rssNewsList.map((element) => (
-						<p
+						<a href={element.url}><p
 							key={element.url}
 							className={
 								element.status == "new" && "background-violet-simplified"
 							}
 						>
 							{element.title}
-						</p>
+						</p></a>
 					))}
 				</div>
 			)}

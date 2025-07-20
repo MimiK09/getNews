@@ -30,6 +30,7 @@ MongoDB (local ou distant)
 (optionnel) Clés API pour Google, Reddit, Threads, etc.
 Installation des dépendances
 bash
+
 ### Back-end
 cd getNewsBack_macro
 npm install
