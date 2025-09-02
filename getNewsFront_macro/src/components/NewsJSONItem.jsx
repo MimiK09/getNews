@@ -31,7 +31,7 @@ const NewsJSONItem = ({
 			<p>Title: {element.title}</p>
 			<p>Source: {element.source}</p>
 			<p>Description: {element.complete_description}</p>
-			<p>URL: {element.url}</p>
+			<a href={element.url}>URL: {element.url}</a>
 			<p>keyword: {element.keyword}</p>
 			<p>Date: {convertDate(element.publishedDate)}</p>
 			<div>
