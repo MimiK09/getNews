@@ -6,7 +6,9 @@ const { fetchArticleContent } = require("./services/scrapNewsCoreeInfo");
 const fetchRSSFeeds = require("./services/fetchRSSFeed");
 const fetchBDD = require("./services/fetchBDDCoreeInfo");
 const rssFeedNews = require("../modeles/rssFeedNews");
-const { validateNewsFromRSSFeed } = require('../middlewares/validateNewsCoreeInfo');
+const {
+	validateNewsFromRSSFeed,
+} = require("../middlewares/validateNewsCoreeInfo");
 
 const N8N_JSON_URL = process.env.N8N_JSON_URL;
 
@@ -55,7 +57,8 @@ router.get("/testN8N", async (req, res) => {
 
 		const testN8N = { data: finalTab };
 
-		await axios.get(N8N_JSON_URL, testN8N)
+		await axios
+			.get(N8N_JSON_URL, testN8N)
 			.then((response) => {
 				console.log("✅ Data sent to N8N successfully:", response.data);
 			})
@@ -125,41 +128,52 @@ router.get("/fetchRssFeed", async (req, res) => {
 /**
  * Validate selected news manually
  */
-router.post("/validateNewsFromRSSFeed", validateNewsFromRSSFeed, async (req, res) => {
-	try {
-		const listNews = req.body.data;
-		let successCount = 0;
-		let failedCount = 0;
+router.post(
+	"/validateNewsFromRSSFeed",
+	validateNewsFromRSSFeed,
+	async (req, res) => {
+		try {
+			const listNews = req.body.data;
+			let successCount = 0;
+			let failedCount = 0;
 
-		for (let news of listNews) {
-			try {
-				const newsFounded = await rssFeedNews.findOne({ url: news.url });
-				if (newsFounded && newsFounded.status === "displayed") {
-					const final_description = await fetchArticleContent(
-						newsFounded.url,
-						newsFounded.source
+			for (let news of listNews) {
+				try {
+					const newsFounded = await rssFeedNews.findOne({ url: news.url });
+					if (
+						newsFounded &&
+						(newsFounded.complete_description === "" ||
+							!newsFounded.complete_description)
+					) {
+						const final_description = await fetchArticleContent(
+							newsFounded.url,
+							newsFounded.source
+						);
+						console.log("✅ News scrapped:", newsFounded.title);
+
+						newsFounded.complete_description = final_description;
+						newsFounded.status = "waiting";
+						newsFounded.keyword = news.keyword;
+						await newsFounded.save();
+						successCount++;
+					} else {
+						console.warn(`⚠️ News ignored or not found: ${news?.title}`);
+					}
+				} catch (err) {
+					console.error(
+						`❌ Error processing news ${news?.title}:`,
+						err.message
 					);
-					console.log("✅ News scrapped:", newsFounded.title);
-
-					newsFounded.complete_description = final_description;
-					newsFounded.status = "waiting";
-					newsFounded.keyword = news.keyword;
-					await newsFounded.save();
-					successCount++;
-				} else {
-					console.warn(`⚠️ News ignored or not found: ${news?.title}`);
+					failedCount++;
 				}
-			} catch (err) {
-				console.error(`❌ Error processing news ${news?.title}:`, err.message);
-				failedCount++;
 			}
+			res.status(200).json({ success: true, successCount, failedCount });
+		} catch (error) {
+			console.error("❗ Error in /validateNewsFromRSSFeed:", error.message);
+			res.status(500).json({ success: false, error: error.message });
 		}
-		res.status(200).json({ success: true, successCount, failedCount });
-	} catch (error) {
-		console.error("❗ Error in /validateNewsFromRSSFeed:", error.message);
-		res.status(500).json({ success: false, error: error.message });
 	}
-});
+);
 
 /**
  * Validate news from auto input
@@ -200,7 +214,10 @@ router.post("/validateNewsFromRSSFeed_auto", async (req, res) => {
 		}
 		res.status(200).json({ success: true, successCount, failedCount });
 	} catch (error) {
-		console.error("❗ General error in /validateNewsFromRSSFeed_auto:", error.message);
+		console.error(
+			"❗ General error in /validateNewsFromRSSFeed_auto:",
+			error.message
+		);
 		res.status(500).json({ success: false, error: error.message });
 	}
 });
@@ -259,10 +276,18 @@ router.post("/changeStatusJSONNews", async (req, res) => {
 					}
 					await news.save();
 				} else {
-					console.warn("⚠️ News not found:", newsInput.title, "-", newsInput.url);
+					console.warn(
+						"⚠️ News not found:",
+						newsInput.title,
+						"-",
+						newsInput.url
+					);
 				}
 			} catch (err) {
-				console.error(`❗ Error updating news ${newsInput.title}:`, err.message);
+				console.error(
+					`❗ Error updating news ${newsInput.title}:`,
+					err.message
+				);
 			}
 		}
 
