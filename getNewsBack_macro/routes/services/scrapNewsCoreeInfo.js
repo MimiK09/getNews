@@ -68,21 +68,20 @@ const fetchWithCheerio = async (url, selector, source) => {
 const fetchWithPuppeteer = async (url, selector) => {
 	const browser = await puppeteer.launch({ headless: "new" });
 	const page = await browser.newPage();
-	console.log("je tente");
 	await page.setUserAgent(
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0"
 	);
-	console.log("je tente 2");
 
-	await page.goto(url, {
-		waitUntil: "networkidle2", // attend qu’il n’y ait pas plus de 2 requêtes réseau actives pendant au moins 500 ms.
-		timeout: 60000 // optionnel, évite de bloquer trop longtemps
-	  });
+	// await page.goto(url, {
+	// 	waitUntil: "networkidle2", // attend qu’il n’y ait pas plus de 2 requêtes réseau actives pendant au moins 500 ms.
+	// 	timeout: 60000 // optionnel, évite de bloquer trop longtemps
+	//   });
 
-	console.log("je tente 3");
+	await page.goto(url, { waitUntil: "domcontentloaded", timeout: 10000 });
+	await page.waitForSelector("p.editor-p", { timeout: 5000 });
+
 
 	await page.waitForSelector(selector, { timeout: 5000 });
-	console.log("je tente 4");
 
 	const content = await page.$$eval(selector, (nodes) =>
 		nodes.map((n) => n.innerText.trim()).join("\n")

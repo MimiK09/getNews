@@ -192,7 +192,11 @@ router.post("/validateNewsFromRSSFeed_auto", async (req, res) => {
 					continue;
 				}
 
-				if (newsFounded.status === "displayed") {
+				if (
+					newsFounded &&
+					(newsFounded.complete_description === "" ||
+						!newsFounded.complete_description)
+				) {
 					const final_description = await fetchArticleContent(
 						newsFounded.url,
 						newsFounded.source
@@ -205,7 +209,9 @@ router.post("/validateNewsFromRSSFeed_auto", async (req, res) => {
 					await newsFounded.save();
 					successCount++;
 				} else {
-					console.log(`ℹ️ News skipped (not 'displayed'): ${news.title}`);
+					console.log(
+						`ℹ️ News skipped (description already exist): ${news.title}`
+					);
 				}
 			} catch (error) {
 				console.error(`❗ Error on news "${news.title}":`, error.message);
