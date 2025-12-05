@@ -410,20 +410,6 @@ const NewsRssPage = (props) => {
 			<h2>Get news from RSS feeds and get a JSON</h2>
 			{currentView === "none" && <p>Que souhaitez vous faire ?</p>}
 			<div className="view_bloc">
-				<button className="view_tag" onClick={() => switchView("rss")}>
-					Liste des news récupérées lors du dernier appel
-				</button>
-				<button
-					className="view_tag"
-					onClick={() => switchView("rss_simplified")}
-				>
-					Vue simplifiée des news récupérées lors du dernier appel
-				</button>
-				<button className="view_tag" onClick={() => switchView("json")}>
-					Liste des news validées pour sauvegarde
-				</button>
-			</div>
-			<div className="view_bloc">
 				<button
 					className="ActionBtn"
 					onClick={() => {
@@ -447,6 +433,20 @@ const NewsRssPage = (props) => {
 					}}
 				>
 					Soumettre liste de news
+				</button>
+			</div>
+			<div className="view_bloc">
+				<button className="view_tag" onClick={() => switchView("rss")}>
+					Liste des news récupérées lors du dernier appel
+				</button>
+				<button
+					className="view_tag"
+					onClick={() => switchView("rss_simplified")}
+				>
+					Vue simplifiée des news récupérées lors du dernier appel
+				</button>
+				<button className="view_tag" onClick={() => switchView("json")}>
+					Liste des news validées pour sauvegarde
 				</button>
 			</div>
 			{isLoading && (
@@ -489,7 +489,11 @@ const NewsRssPage = (props) => {
 								const textToCopy = `${
 									prompts.promptSelectNewsSociety.prompt
 								}\n\n${rssNewsList.map((el) => el.title).join("\n")}`;
-								window.open(prompts.promptSelectNewsSociety.redirectUrl, "_blank");
+								navigator.clipboard.writeText(textToCopy);
+								window.open(
+									prompts.promptSelectNewsSociety.redirectUrl,
+									"_blank"
+								);
 							}}
 						>
 							Faire une sélection d'articles de société
@@ -499,7 +503,8 @@ const NewsRssPage = (props) => {
 							onClick={() => {
 								const textToCopy = `${
 									prompts.promptSelectNewsDaily.prompt
-								}\n\n${rssNewsList.map((el) => el.title).join("\n")}`;
+								}\n\n\n${rssNewsList.map((el) => el.title).join("\n\n")}`;
+								navigator.clipboard.writeText(textToCopy);
 								window.open(
 									prompts.promptSelectNewsDaily.redirectUrl,
 									"_blank"
@@ -565,6 +570,29 @@ const NewsRssPage = (props) => {
 							}}
 						>
 							Tous publiés
+						</button>
+						<button
+							onClick={() => {
+								const textToCopy = `${
+									prompts.promptMakeSumUpForThreadReddit.prompt
+								}\n\n${pendingLongDescriptionNews
+									.map(
+										(el) =>
+											`Titre : ${el.title}
+											\nDescription : ${el.complete_description}
+											\nKeyword : ${el.keyword}
+											
+											`
+									)
+									.join("\n ______ \n")}`;
+								navigator.clipboard.writeText(textToCopy);
+								window.open(
+									prompts.promptMakeSumUpForThreadReddit.redirectUrl,
+									"_blank"
+								);
+							}}
+						>
+							Sum up by AI
 						</button>
 					</div>
 					<div className="all_keywords_bloc">

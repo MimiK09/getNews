@@ -345,16 +345,24 @@ router.get("/mediaFromWordpress", async (req, res) => {
  */
 router.delete("/cleandatabase", async (req, res) => {
 	try {
-		const rssFeedNewsFounded = await rssFeedNews.find({ status: "displayed" });
+		const rssFeedNewsFounded = await rssFeedNews.find({
+			status: { $in: ["deleted", "displayed"] },
+		});
+
 		let deletedNews = [];
 
 		for (let news of rssFeedNewsFounded) {
 			try {
-				const isRecent = await isDateWithinXDays(news.publishedDate, 10);
+				const isRecent = await isDateWithinXDays(news.publishedDate, 200);
 
 				if (!isRecent) {
 					await rssFeedNews.deleteOne({ _id: news._id });
-					console.log("🗑️ Deleted old news:", news.title);
+					console.log(
+						"🗑️ Deleted old news:",
+						news.title,
+						" // status =",
+						news.status
+					);
 					deletedNews.push(news.title);
 				}
 			} catch (err) {
