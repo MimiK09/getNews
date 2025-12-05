@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./NewsItem.css";
 
 const NewsItem = ({
@@ -9,9 +9,13 @@ const NewsItem = ({
 	handleAddTagForSelectedNews,
 	selectedArticlesForDatabase,
 }) => {
-	const [newsTag, setNewsTag] = useState("");
+	// ❌ Inutile : ce composant est détruit/remonté, donc l'état local se perd
+	//const [newsTag, setNewsTag] = useState(""); 
 	const [inputValue, setInputValue] = useState(""); // Valeur en cours de saisie
 	const [showDropdown, setShowDropdown] = useState(false); // Affichage du menu
+	
+	// ✅ Correct : on dérive directement la valeur depuis le parent
+	const newsTag = selectedArticlesForDatabase.find(a => a.url === element.url)?.keyword ?? "";
 
 	// Ajouter un tag lorsqu'un espace ou "Enter" est saisi
 	const handleKeyDown = async (event, element) => {
@@ -26,7 +30,7 @@ const NewsItem = ({
 			event.preventDefault();
 			const newTag = inputValue.trim();
 			await handleAddTagForSelectedNews(element.url, newTag); // Mettre à jour l'état global avec le nouveau tag
-			await setNewsTag(newTag); // Remplace l'ancien tag par le nouveau (s'il n'y en a pas déjà)
+			// await setNewsTag(newTag);
 			await setInputValue(""); // Réinitialiser l’input après ajout
 		}
 	};
@@ -47,7 +51,7 @@ const NewsItem = ({
 
 	const onClickDropdownTag = (tag) => {
 		handleAddTagForSelectedNews(element.url, tag); // Mettre à jour l'état global avec le nouveau tag
-		setNewsTag(tag);
+		// setNewsTag(tag);
 	};
 
 	let newValue = "";

@@ -531,7 +531,7 @@ const NewsRssPage = (props) => {
 				</div>
 			)}
 			{currentView === "form_to_send_news" && (
-				<div className="">
+				<div>
 					<form>
 						<textarea
 							placeholder="liste à envoyer"
