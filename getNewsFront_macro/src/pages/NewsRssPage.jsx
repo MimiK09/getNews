@@ -451,8 +451,7 @@ const NewsRssPage = (props) => {
 			</div>
 			{isLoading && (
 				<div className="WaitingMsg">
-					<p>Waiting</p>
-					<img src={loadingGif} />
+					<div class="loader"></div>
 				</div>
 			)}
 			{currentView === "rss" && rssNewsList.length > 0 && (
