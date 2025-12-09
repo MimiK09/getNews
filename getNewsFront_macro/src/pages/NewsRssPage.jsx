@@ -5,7 +5,6 @@ import NewsRSSItem from "../components/NewsRSSItem";
 import NewsJSONItem from "../components/NewsJSONItem";
 import "./NewsPages.css";
 import "../App.css";
-import loadingGif from "../assets/pictures/Loading.gif";
 import prompts from "../assets/prompts";
 
 const NewsRssPage = (props) => {
@@ -103,6 +102,7 @@ const NewsRssPage = (props) => {
 	const handleFetchRssNews = useCallback(async () => {
 		setMessage("");
 		setIsLoading(true);
+		setCurrentView("none");
 
 		try {
 			const response = await axios.get(
@@ -124,6 +124,7 @@ const NewsRssPage = (props) => {
 	const handleFetchPendingJsonNews = useCallback(async () => {
 		setMessage("");
 		setIsLoading(true);
+		setCurrentView("none");
 
 		try {
 			// Appel principal pour les données JSON (critique)
@@ -215,6 +216,7 @@ const NewsRssPage = (props) => {
 		event.preventDefault();
 		setMessage("");
 		setIsLoading(true);
+		setCurrentView("none");
 
 		// let articlesToSend = [];
 		let articlesToSend = [...selectedArticlesForDatabase];
@@ -235,7 +237,7 @@ const NewsRssPage = (props) => {
 
 		setIsLoading(false);
 		setSelectedArticlesForDatabase([]);
-		setCurrentView("none");
+
 		setMessage(
 			"Les news sélectionnées ont bien été envoyées en BDD et seront actualisées avec une description complète"
 		);
@@ -246,6 +248,7 @@ const NewsRssPage = (props) => {
 		event.preventDefault();
 		setMessage("");
 		setIsLoading(true);
+		setCurrentView("none");
 
 		// Validation du texte
 		if (!inputText.includes("keyword") || !inputText.includes("title")) {
@@ -325,6 +328,8 @@ const NewsRssPage = (props) => {
 	const submitStatusChanges = async (event) => {
 		event.preventDefault();
 		setIsLoading(true);
+		setCurrentView("none");
+
 		try {
 			const response = await axios.post(
 				`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/changeStatusJSONNews`,
@@ -456,7 +461,7 @@ const NewsRssPage = (props) => {
 			)}
 			{currentView === "rss" && rssNewsList.length > 0 && (
 				<div>
-					<form>
+					<form className="validation-form">
 						<div className="NewsRSSContainer">
 							{rssNewsList.map((element) => (
 								<NewsRSSItem
@@ -470,12 +475,14 @@ const NewsRssPage = (props) => {
 								/>
 							))}
 						</div>
-						<button
-							className="ValidateButton"
-							onClick={handleSubmitSelectedNews}
-						>
-							Envoyer en BDD
-						</button>
+						<div className="sticky-validation-bar">
+							<button
+								className="ValidateButton"
+								onClick={handleSubmitSelectedNews}
+							>
+								Envoyer en BDD
+							</button>
+						</div>
 					</form>
 				</div>
 			)}
@@ -594,14 +601,22 @@ const NewsRssPage = (props) => {
 							Sum up by AI
 						</button>
 					</div>
+
 					<div className="all_keywords_bloc">
+						<p>
+							Nbre de keywords différents ={" "}
+							{new Set(pendingLongDescriptionNews.map((el) => el.keyword)).size}
+						</p>
 						{[
 							...new Set(pendingLongDescriptionNews.map((el) => el.keyword)),
 						].map((uniqueKeyword) => (
-							<p key={uniqueKeyword}>{uniqueKeyword}</p>
+							<p key={uniqueKeyword} className="keyword-tag">
+								{uniqueKeyword}
+							</p>
 						))}
 					</div>
-					<form>
+
+					<form className="validation-form">
 						<div className="NewsRSSContainer">
 							{pendingLongDescriptionNews
 								.slice() // Copie le tableau pour éviter de modifier l'état directement
@@ -619,14 +634,16 @@ const NewsRssPage = (props) => {
 									/>
 								))}
 						</div>
-						<button
-							className="ValidateButton"
-							onClick={(event) => {
-								submitStatusChanges(event);
-							}}
-						>
-							Valider les changements
-						</button>
+						<div className="sticky-validation-bar">
+							<button
+								className="ValidateButton"
+								onClick={(event) => {
+									submitStatusChanges(event);
+								}}
+							>
+								Valider les changements
+							</button>
+						</div>
 					</form>
 				</div>
 			)}
