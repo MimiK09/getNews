@@ -13,7 +13,12 @@ const loadEnv = () => {
     // Vérifier si le fichier existe et le charger
     if (fs.existsSync(envFile)) {
       dotenv.config({ path: envFile });
-      console.log(`🗃️ Chargement de ${envFile} (branche: ${branch})`);
+      console.log(`
+      ===============================
+      🗃️  Chargement de ${envFile}
+      Branche actuelle : ${branch}
+      ===============================
+      `);
     } else {
       console.error(`⚠️ Fichier ${envFile} introuvable !`);
       process.exit(1);

@@ -28,7 +28,12 @@ try {
   const envLocalPath = path.join(__dirname, "..", ".env.local");
   fs.copyFileSync(envPath, envLocalPath);
 
-  console.log(`✅ Chargement de ${envFile} (branche: ${branch})`);
+  console.log(`
+===============================
+🗃️  Chargement de ${envFile}
+Branche actuelle : ${branch}
+===============================
+`);
 } catch (error) {
   console.error("❌ Impossible de récupérer la branche Git.");
   console.error(error);  // Afficher l'erreur complète
