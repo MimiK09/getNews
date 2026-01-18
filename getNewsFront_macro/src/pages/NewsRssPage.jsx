@@ -545,7 +545,7 @@ const NewsRssPage = (props) => {
 					</div>
 					<div className="sticky-validation-bar">
 						<button
-							onClick={(event) => {
+							onClick={() => {
 								switchView("rss");
 							}}
 						>

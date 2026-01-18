@@ -10,69 +10,6 @@ const {
 	validateNewsFromRSSFeed,
 } = require("../middlewares/validateNewsCoreeInfo");
 
-const N8N_JSON_URL = process.env.N8N_JSON_URL;
-
-/**
- * Test sending news to N8N
- */
-router.get("/testN8N", async (req, res) => {
-	try {
-		const listNewsBDD = await fetchBDD();
-		const listNewsRSS = await fetchRSSFeeds();
-
-		const checkNews = async () => {
-			let tableau = [];
-			for (const news of listNewsRSS) {
-				const existingBDDNews = await rssFeedNews.findOne({ url: news.url });
-
-				if (!existingBDDNews) {
-					const newRssFeedNews = new rssFeedNews({
-						title: news.title,
-						url: news.url,
-						publishedDate: news.publishedDate,
-						status: "new",
-						source: news.source,
-					});
-					await newRssFeedNews.save();
-					tableau.push(newRssFeedNews);
-				}
-			}
-			return tableau;
-		};
-
-		const newTab = await checkNews();
-		const finalTab = [...newTab, ...listNewsBDD];
-
-		const changeStatus = async () => {
-			for (const news of newTab) {
-				const existingBDDNews = await rssFeedNews.findOne({ url: news.url });
-				if (existingBDDNews) {
-					existingBDDNews.status = "displayed";
-					await existingBDDNews.save();
-				}
-			}
-		};
-
-		await changeStatus();
-
-		const testN8N = { data: finalTab };
-
-		await axios
-			.get(N8N_JSON_URL, testN8N)
-			.then((response) => {
-				console.log("✅ Data sent to N8N successfully:", response.data);
-			})
-			.catch((error) => {
-				console.error("❌ Error sending data to N8N:", error.message);
-			});
-
-		res.status(200).json({ success: true });
-	} catch (error) {
-		console.error("❗ Error in /testN8N:", error.message);
-		res.status(500).json({ success: false, error: error.message });
-	}
-});
-
 /**
  * Fetch RSS feeds and update database
  */

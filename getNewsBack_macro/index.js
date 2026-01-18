@@ -31,6 +31,9 @@ app.use(newsThreadRoutes)
 const newsCoreeInfoRoutes = require('./routes/newsCoreeInfoRoutes');
 app.use(newsCoreeInfoRoutes)
 
+const newsTwitterRoutes = require('./routes/newsTwitterRoutes');
+app.use(newsTwitterRoutes)
+
 app.get("/", (req, res) => {
 	res.status(200).send("je suis sur le serveur");
 });
