@@ -105,6 +105,7 @@ const NewsRssPage = (props) => {
 		setCurrentView("none");
 
 		try {
+			console.log("Le serveur va être appelé");
 			const response = await axios.get(
 				`${import.meta.env.VITE_REACT_APP_SERVER_ADDRESS}/fetchRssFeed`
 			);
@@ -482,6 +483,13 @@ const NewsRssPage = (props) => {
 							>
 								Envoyer en BDD
 							</button>
+							<button
+								onClick={(event) => {
+									switchView("rss_simplified");
+								}}
+							>
+								Vue simplifiée
+							</button>
 						</div>
 					</form>
 				</div>
@@ -520,6 +528,7 @@ const NewsRssPage = (props) => {
 							Faire une sélection d'articles d'actualité
 						</button>
 					</div>
+
 					<div className="NewsRSSContainer_simplified">
 						{rssNewsList.map((element) => (
 							<a href={element.url}>
@@ -533,6 +542,15 @@ const NewsRssPage = (props) => {
 								</p>
 							</a>
 						))}
+					</div>
+					<div className="sticky-validation-bar">
+						<button
+							onClick={(event) => {
+								switchView("rss");
+							}}
+						>
+							Vue complète
+						</button>
 					</div>
 				</div>
 			)}

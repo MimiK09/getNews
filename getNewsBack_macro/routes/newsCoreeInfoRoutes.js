@@ -78,8 +78,12 @@ router.get("/testN8N", async (req, res) => {
  */
 router.get("/fetchRssFeed", async (req, res) => {
 	try {
+		console.log("Récupération de news demandées");
 		const listNewsBDD = await fetchBDD();
+		console.log("News de la BDD récupérées");
+
 		const listNewsRSS = await fetchRSSFeeds();
+		console.log("News des flux RSS récupérées");
 
 		const checkNews = async () => {
 			let tableau = [];
