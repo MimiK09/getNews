@@ -72,11 +72,6 @@ const fetchWithPuppeteer = async (url, selector) => {
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0"
 	);
 
-	// await page.goto(url, {
-	// 	waitUntil: "networkidle2", // attend qu’il n’y ait pas plus de 2 requêtes réseau actives pendant au moins 500 ms.
-	// 	timeout: 60000 // optionnel, évite de bloquer trop longtemps
-	//   });
-
 	await page.goto(url, { waitUntil: "domcontentloaded", timeout: 10000 });
 	await page.waitForSelector("p.editor-p", { timeout: 5000 });
 

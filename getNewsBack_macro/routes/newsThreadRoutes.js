@@ -170,40 +170,45 @@ router.post("/threads/publish-threads", async (req, res) => {
 
 	try {
 		// 2️⃣ Récupération et découpage des news
-		const tabFromGoogleSheet = await fetchGoogleSheet("Liste Threads!A:E", [0]);
-
-		// Amélioration du découpage avec validation
+		// On récupère A:E. Dans chaque ligne : index 1 = B (Titre), index 2 = C (Texte)
+		const tabFromGoogleSheet = await fetchGoogleSheet(
+			"Liste Threads!A:E",
+			[1, 2]
+		);
 		const tabWithLittleSections = tabFromGoogleSheet
-			.map((news) => {
-				if (!news || typeof news !== "string") return [];
+			.map((row) => {
+
+				const title = row.title?.trim();
+				let text = row.content?.trim();
+
+				if (!title || !text) return [];
 
 				const sections = [];
-				let [title, ...textArray] = news.split(" - ");
 
-				if (!title) return [];
-
-				let text = textArray.join(" - ").trim();
-
-				// Si le texte est court, on garde tout ensemble
+				// Si l'ensemble est court, on garde tout ensemble
 				if ((title + " - " + text).length <= 500) {
 					sections.push(title + " - " + text);
 					return sections;
 				}
 
-				// Découpe du texte en sections de maximum 500 caractères
+				// Découpe du texte C en sections de maximum 500 caractères (incluant le titre B)
 				while (text.length > 0) {
-					let remainingLength = 500 - title.length - 3;
+					// On calcule la place restante pour le texte
+					// 500 - longueur titre - 3 (pour le " - ")
+					let remainingSpace = 500 - title.length - 3;
 
-					if (remainingLength <= 0) {
-						console.warn("Titre trop long:", title.length, "caractères");
+					if (remainingSpace <= 0) {
+						console.warn("Titre trop long, impossible de découper:", title);
 						break;
 					}
 
-					let endIndex = text.lastIndexOf(".", remainingLength);
+					// On cherche la fin de la section
+					let endIndex = text.lastIndexOf(".", remainingSpace);
 					if (endIndex === -1) {
-						endIndex = text.lastIndexOf(" ", remainingLength);
+						endIndex = text.lastIndexOf(" ", remainingSpace);
 					}
-					if (endIndex === -1) endIndex = remainingLength;
+					// Si pas de point ou d'espace, on coupe brutalement à la limite
+					if (endIndex === -1 || endIndex === 0) endIndex = remainingSpace;
 
 					sections.push(title + " - " + text.slice(0, endIndex + 1).trim());
 					text = text.slice(endIndex + 1).trim();

@@ -4,7 +4,7 @@
 node_modules
 package-lock.json
 credentials_googlesheet.json
-credentials_googlesheet.json
+token_googlesheet.json
 secret/
 threads_tokens.json
 prompts.js
